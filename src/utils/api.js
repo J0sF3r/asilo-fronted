@@ -2,11 +2,15 @@
 import axios from 'axios';
 
 const api = axios.create({
+    baseURL: 'https://asilo-backend-api.onrender.com/api'
+});
+
+/*const api = axios.create({
     baseURL: 'https://asilo-backend-api.onrender.com/api' ,
     headers: {
         'Content-Type': 'application/json'
     }
-});
+});*/
 
 // ESTA PARTE ES LA MÁS IMPORTANTE
 // Se ejecuta ANTES de cada solicitud para añadir el token.
