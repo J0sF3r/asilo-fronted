@@ -67,7 +67,7 @@ const UsersPage = () => {
     }, []);
 
     const handleClickOpen = async (user = null) => {
-        if (user) {
+        if (user && yser.id_usuario) {
             // --- MODO EDICIÓN ---
             try {
                 // 1. Buscamos los datos completos y actualizados del usuario
@@ -98,8 +98,15 @@ const UsersPage = () => {
             // --- MODO CREACIÓN (se queda como antes) ---
             setEditingUser(null);
             setNewUser({
-                username: '', email: '', password: '', id_rol: '',
-                nombre_completo: '', id_medico: null, id_enfermero: null, id_familiar: null
+                username: '',
+                email: '',
+                password: '',
+                id_rol: '',
+                nombre_completo: '',
+                id_medico: null,
+                id_enfermero: null,
+                id_familiar: null,
+                estado: 'activo'
             });
             setOpen(true);
         }
