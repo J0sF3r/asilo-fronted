@@ -162,6 +162,7 @@ const UsersPage = () => {
     };
     const handleSubmit = async () => {
         try {
+            console.log("Datos a enviar:", newUser); // AGREGA ESTO
             if (editingUser) {
                 // Si estamos editando, usamos PUT
                 await api.put(`/users/${editingUser.id_usuario}`, newUser);
@@ -172,7 +173,10 @@ const UsersPage = () => {
             handleClose();
             fetchUsers();
             alert(`¡Usuario ${editingUser ? 'actualizado' : 'creado'} exitosamente!`);
-        } catch (err) { /* ... manejo de error ... */ }
+        } catch (err) { /* ... manejo de error ... */ 
+                console.error("Error completo:", err.response?.data); // Y ESTO
+                alert('Error: ' + (err.response?.data?.msg || err.message));
+        }
     };
 
     const selectedRoleName = roles.find(r => r.id_rol === newUser.id_rol)?.nombre_rol;
