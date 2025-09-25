@@ -67,7 +67,7 @@ const UsersPage = () => {
     }, []);
 
     const handleClickOpen = async (user = null) => {
-        if (user && yser.id_usuario) {
+        if (user && user.id_usuario) {
             // --- MODO EDICIÓN ---
             try {
                 // 1. Buscamos los datos completos y actualizados del usuario
