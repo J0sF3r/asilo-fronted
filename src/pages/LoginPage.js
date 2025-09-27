@@ -33,11 +33,11 @@ const LoginPage = () => {
             else if (userRole === 'Farmacia') {
                 navigate('/farmacia');
             } 
-             else if (userRole === 'Medico General') {
+             /*else if (userRole === 'Medico General') {
                 navigate('/solicitudes');
             }else {
                 navigate('/');
-            }
+            }*/
         } catch (err) {
             console.error(err);
             alert('Credenciales inválidas. Por favor, intente de nuevo.');
