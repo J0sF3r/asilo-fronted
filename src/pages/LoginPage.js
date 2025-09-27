@@ -23,21 +23,14 @@ const LoginPage = () => {
         e.preventDefault();
         try {
             const res = await api.post('/auth/login', { username, password });
+            
+            // Guardamos el token Y el rol del usuario en el localStorage
             localStorage.setItem('token', res.data.token);
-            const userRole = res.data.rol;
-            if (userRole === 'Administración') {
-                navigate('/');
-            } else if (userRole === 'Laboratorio') {
-                navigate('/laboratorio');
-            } 
-            else if (userRole === 'Farmacia') {
-                navigate('/farmacia');
-            } 
-             /*else if (userRole === 'Medico General') {
-                navigate('/solicitudes');
-            }else {
-                navigate('/');
-            }*/
+            localStorage.setItem('userRole', res.data.rol); // <-- LÍNEA CLAVE
+            
+            // Redirigimos a TODOS los usuarios a la página principal
+            navigate('/'); // <-- SIMPLIFICADO
+
         } catch (err) {
             console.error(err);
             alert('Credenciales inválidas. Por favor, intente de nuevo.');
