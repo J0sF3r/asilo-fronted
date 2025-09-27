@@ -9,17 +9,19 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import api from '../utils/api';
 import { Link } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const PacientesPage = () => {
     const [pacientes, setPacientes] = useState([]);
     const [open, setOpen] = useState(false);
+    const [userRole, setUserRole] = useState(null);
 
     // --- CAMBIOS: ESTADOS PARA MANEJAR EDICIÓN Y BORRADO ---
     const [isEditing, setIsEditing] = useState(false);
     const [currentPacienteId, setCurrentPacienteId] = useState(null);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [pacienteToDelete, setPacienteToDelete] = useState(null);
-    
+
     const [formData, setFormData] = useState({
         nombre: '',
         fecha_nacimiento: '',
@@ -40,8 +42,16 @@ const PacientesPage = () => {
     };
 
     useEffect(() => {
+        // Leemos el token para saber el rol del usuario
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decoded = jwtDecode(token);
+            setUserRole(decoded.user.nombre_rol);
+        }
+
         fetchPacientes();
     }, []);
+
 
     const resetForm = () => {
         setFormData({ nombre: '', fecha_nacimiento: '', sexo: '', direccion: '', telefono: '', email: '' });
@@ -74,7 +84,7 @@ const PacientesPage = () => {
         });
         setOpen(true);
     };
-    
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -133,9 +143,12 @@ const PacientesPage = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
                     Gestión de Pacientes
                 </Typography>
+
+                {userRole === 'Administración' && (
                 <Button variant="contained" startIcon={<PersonAddAlt1Icon />} onClick={handleOpenCreate}>
                     Registrar Nuevo Paciente
                 </Button>
+                )}
             </Box>
 
             <TableContainer component={Paper}>
@@ -146,7 +159,10 @@ const PacientesPage = () => {
                             <TableCell sx={{ fontWeight: 'bold' }}>Fecha de Nacimiento</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Sexo</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Teléfono</TableCell>
+
+                            {userRole === 'Administración' && (
                             <TableCell sx={{ fontWeight: 'bold' }} align="right">Acciones</TableCell>
+                            )}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -160,11 +176,13 @@ const PacientesPage = () => {
                                 <TableCell>{formatDate(paciente.fecha_nacimiento)}</TableCell>
                                 <TableCell>{paciente.sexo}</TableCell>
                                 <TableCell>{paciente.telefono}</TableCell>
+                               
+                               {userRole === 'Administración' && (
                                 <TableCell align="right">
-                                    {/* --- CAMBIO: Se añaden los onClick a los botones --- */}
                                     <IconButton color="primary" onClick={() => handleOpenEdit(paciente)}><EditIcon /></IconButton>
                                     <IconButton color="error" onClick={() => handleDeleteOpen(paciente)}><DeleteOutlineIcon /></IconButton>
                                 </TableCell>
+                                )}
                             </TableRow>
                         ))}
                     </TableBody>
