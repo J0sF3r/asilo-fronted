@@ -2,19 +2,21 @@ import React, { useState, useEffect } from 'react';
 import {
     Typography, Box, Button, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle,
-    DialogContent, DialogActions, TextField, Grid, DialogContentText
+    DialogContent, DialogActions, TextField, Grid, DialogContentText // <-- Se agregó DialogContentText
 } from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import api from '../utils/api'; // Asegúrate que la ruta a tu api es correcta
+import api from '../utils/api';
+import { Link } from 'react-router-dom';
 
 const PacientesPage = () => {
     const [pacientes, setPacientes] = useState([]);
     const [open, setOpen] = useState(false);
-    
-    // Estados para manejar edición y borrado
-    const [editingId, setEditingId] = useState(null);
+
+    // --- CAMBIOS: ESTADOS PARA MANEJAR EDICIÓN Y BORRADO ---
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentPacienteId, setCurrentPacienteId] = useState(null);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [pacienteToDelete, setPacienteToDelete] = useState(null);
     
@@ -22,8 +24,8 @@ const PacientesPage = () => {
         nombre: '',
         fecha_nacimiento: '',
         sexo: '',
-        telefono: '',
         direccion: '',
+        telefono: '',
         email: ''
     });
 
@@ -33,6 +35,7 @@ const PacientesPage = () => {
             setPacientes(res.data);
         } catch (err) {
             console.error("Error al obtener los pacientes:", err);
+            alert("No se pudo cargar la lista de pacientes.");
         }
     };
 
@@ -40,48 +43,47 @@ const PacientesPage = () => {
         fetchPacientes();
     }, []);
 
-    // Resetea el formulario y el estado de edición
     const resetForm = () => {
-        setFormData({ nombre: '', fecha_nacimiento: '', sexo: '', telefono: '', direccion: '', email: '' });
-        setEditingId(null);
+        setFormData({ nombre: '', fecha_nacimiento: '', sexo: '', direccion: '', telefono: '', email: '' });
+        setIsEditing(false);
+        setCurrentPacienteId(null);
     };
 
-    // Cierra el modal principal y resetea el formulario
+    const handleOpenCreate = () => {
+        resetForm();
+        setOpen(true);
+    };
+
     const handleClose = () => {
         setOpen(false);
         resetForm();
     };
 
-    // Abre el modal para CREAR un nuevo paciente
-    const handleOpenCreate = () => {
-        resetForm();
-        setOpen(true);
-    };
-    
-    // Abre el modal para EDITAR un paciente existente
+    // --- NUEVA FUNCIÓN PARA ABRIR EL MODAL EN MODO EDICIÓN ---
     const handleOpenEdit = (paciente) => {
-        setEditingId(paciente.id_paciente);
+        setIsEditing(true);
+        setCurrentPacienteId(paciente.id_paciente);
         const formattedDate = paciente.fecha_nacimiento ? new Date(paciente.fecha_nacimiento).toISOString().split('T')[0] : '';
         setFormData({
-            nombre: paciente.nombre || '',
+            nombre: paciente.nombre,
             fecha_nacimiento: formattedDate,
-            sexo: paciente.sexo || '',
-            telefono: paciente.telefono || '',
-            direccion: paciente.direccion || '',
-            email: paciente.email || ''
+            sexo: paciente.sexo,
+            direccion: paciente.direccion,
+            telefono: paciente.telefono,
+            email: paciente.email,
         });
         setOpen(true);
     };
-
+    
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // Envía el formulario (ya sea para crear o editar)
+    // --- FUNCIÓN handleSubmit MODIFICADA PARA CREAR O EDITAR ---
     const handleSubmit = async () => {
         try {
-            if (editingId) {
-                await api.put(`/pacientes/${editingId}`, formData);
+            if (isEditing) {
+                await api.put(`/pacientes/${currentPacienteId}`, formData);
                 alert('¡Paciente actualizado exitosamente!');
             } else {
                 await api.post('/pacientes', formData);
@@ -91,33 +93,31 @@ const PacientesPage = () => {
             fetchPacientes();
         } catch (err) {
             console.error("Error al guardar el paciente:", err);
-            alert('Error al guardar el paciente.');
+            alert('Error al guardar el paciente. Verifique los datos.');
         }
     };
 
-    // Abre el diálogo de confirmación para eliminar
+    // --- NUEVAS FUNCIONES PARA MANEJAR LA ELIMINACIÓN ---
     const handleDeleteOpen = (paciente) => {
         setPacienteToDelete(paciente);
         setDeleteConfirmOpen(true);
     };
 
-    // Cierra el diálogo de confirmación
     const handleDeleteClose = () => {
         setDeleteConfirmOpen(false);
         setPacienteToDelete(null);
     };
 
-    // Confirma y ejecuta la eliminación
     const handleDeleteConfirm = async () => {
-        if (!pacienteToDelete) return;
         try {
             await api.delete(`/pacientes/${pacienteToDelete.id_paciente}`);
             alert('Paciente eliminado exitosamente.');
-            handleDeleteClose();
             fetchPacientes();
         } catch (err) {
             console.error("Error al eliminar el paciente:", err);
-            alert('Error al eliminar el paciente.');
+            alert("No se pudo eliminar al paciente.");
+        } finally {
+            handleDeleteClose();
         }
     };
 
@@ -133,7 +133,7 @@ const PacientesPage = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
                     Gestión de Pacientes
                 </Typography>
-                <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={handleOpenCreate}>
+                <Button variant="contained" startIcon={<PersonAddAlt1Icon />} onClick={handleOpenCreate}>
                     Registrar Nuevo Paciente
                 </Button>
             </Box>
@@ -152,11 +152,16 @@ const PacientesPage = () => {
                     <TableBody>
                         {pacientes.map((paciente) => (
                             <TableRow key={paciente.id_paciente}>
-                                <TableCell>{paciente.nombre}</TableCell>
+                                <TableCell>
+                                    <Link to={`/pacientes/${paciente.id_paciente}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                        {paciente.nombre}
+                                    </Link>
+                                </TableCell>
                                 <TableCell>{formatDate(paciente.fecha_nacimiento)}</TableCell>
                                 <TableCell>{paciente.sexo}</TableCell>
                                 <TableCell>{paciente.telefono}</TableCell>
                                 <TableCell align="right">
+                                    {/* --- CAMBIO: Se añaden los onClick a los botones --- */}
                                     <IconButton color="primary" onClick={() => handleOpenEdit(paciente)}><EditIcon /></IconButton>
                                     <IconButton color="error" onClick={() => handleDeleteOpen(paciente)}><DeleteOutlineIcon /></IconButton>
                                 </TableCell>
@@ -168,15 +173,28 @@ const PacientesPage = () => {
 
             {/* Modal para Registrar y Editar Paciente */}
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>{editingId ? 'Editar Paciente' : 'Registrar Nuevo Paciente'}</DialogTitle>
+                {/* --- CAMBIO: El título ahora es dinámico --- */}
+                <DialogTitle>{isEditing ? 'Editar Paciente' : 'Registrar Nuevo Paciente'}</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ mt: 1 }}>
-                        <Grid item xs={12}> <TextField required name="nombre" label="Nombre Completo" fullWidth value={formData.nombre} onChange={handleChange} /> </Grid>
-                        <Grid item xs={12} sm={6}> <TextField required name="fecha_nacimiento" label="Fecha de Nacimiento" type="date" fullWidth value={formData.fecha_nacimiento} onChange={handleChange} InputLabelProps={{ shrink: true }} /> </Grid>
-                        <Grid item xs={12} sm={6}> <TextField name="sexo" label="Sexo" fullWidth value={formData.sexo} onChange={handleChange} /> </Grid>
-                        <Grid item xs={12} sm={6}> <TextField name="telefono" label="Teléfono" fullWidth value={formData.telefono} onChange={handleChange} /> </Grid>
-                        <Grid item xs={12} sm={6}> <TextField name="email" label="Correo Electrónico" fullWidth value={formData.email} onChange={handleChange} /> </Grid>
-                        <Grid item xs={12}> <TextField name="direccion" label="Dirección" fullWidth value={formData.direccion} onChange={handleChange} /> </Grid>
+                        <Grid item xs={12}>
+                            <TextField required name="nombre" label="Nombre Completo" fullWidth value={formData.nombre} onChange={handleChange} />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField required name="fecha_nacimiento" label="Fecha de Nacimiento" type="date" InputLabelProps={{ shrink: true }} fullWidth value={formData.fecha_nacimiento} onChange={handleChange} />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField name="sexo" label="Sexo" fullWidth value={formData.sexo} onChange={handleChange} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField name="direccion" label="Dirección" fullWidth multiline rows={2} value={formData.direccion} onChange={handleChange} />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField name="telefono" label="Teléfono" fullWidth value={formData.telefono} onChange={handleChange} />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField name="email" label="Correo Electrónico" type="email" fullWidth value={formData.email} onChange={handleChange} />
+                        </Grid>
                     </Grid>
                 </DialogContent>
                 <DialogActions>
@@ -185,7 +203,7 @@ const PacientesPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Diálogo de Confirmación de Borrado */}
+            {/* --- NUEVO: Diálogo de Confirmación para Eliminar --- */}
             <Dialog open={deleteConfirmOpen} onClose={handleDeleteClose}>
                 <DialogTitle>Confirmar Eliminación</DialogTitle>
                 <DialogContent>
