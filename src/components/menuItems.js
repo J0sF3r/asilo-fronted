@@ -34,7 +34,7 @@ const allMenuItems = [
         text: 'Gestionar Pacientes',
         path: '/pacientes',
         icon: <PeopleIcon />,
-        allowedRoles: ['Administración']
+        allowedRoles: ['Administración', 'Medico General']
     },
     {
         text: 'Familiares',
