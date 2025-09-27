@@ -1,26 +1,30 @@
-// src/pages/PacientesPage.js
 import React, { useState, useEffect } from 'react';
 import {
     Typography, Box, Button, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle,
-    DialogContent, DialogActions, TextField, Grid
+    DialogContent, DialogActions, TextField, Grid, DialogContentText
 } from '@mui/material';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import api from '../utils/api';
-import { Link } from 'react-router-dom';
+import api from '../utils/api'; // Asegúrate que la ruta a tu api es correcta
 
 const PacientesPage = () => {
     const [pacientes, setPacientes] = useState([]);
     const [open, setOpen] = useState(false);
-    const [editingId, setEditingId] = useState(null); // <-- NUEVO: Para saber si estamos editando o creando
-    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false); // <-- NUEVO: Para el modal de confirmación de borrado
-    const [pacienteToDelete, setPacienteToDelete] = useState(null); // <-- NUEVO: Para guardar el paciente que se va a borrar
-
-    const [newPaciente, setNewPaciente] = useState({
-        nombre: '', fecha_nacimiento: '', sexo: '',
-        direccion: '', telefono: '', email: ''
+    
+    // Estados para manejar edición y borrado
+    const [editingId, setEditingId] = useState(null);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [pacienteToDelete, setPacienteToDelete] = useState(null);
+    
+    const [formData, setFormData] = useState({
+        nombre: '',
+        fecha_nacimiento: '',
+        sexo: '',
+        telefono: '',
+        direccion: '',
+        email: ''
     });
 
     const fetchPacientes = async () => {
@@ -29,7 +33,6 @@ const PacientesPage = () => {
             setPacientes(res.data);
         } catch (err) {
             console.error("Error al obtener los pacientes:", err);
-            alert("No se pudo cargar la lista de pacientes.");
         }
     };
 
@@ -37,24 +40,27 @@ const PacientesPage = () => {
         fetchPacientes();
     }, []);
 
-    // --- LÓGICA MODIFICADA PARA MANEJAR FORMULARIO Y MODAL ---
+    // Resetea el formulario y el estado de edición
     const resetForm = () => {
         setFormData({ nombre: '', fecha_nacimiento: '', sexo: '', telefono: '', direccion: '', email: '' });
         setEditingId(null);
     };
-    const handleClickOpen = () => {
-        setNewPaciente({ nombre: '', fecha_nacimiento: '', sexo: '', direccion: '', telefono: '', email: '' });
+
+    // Cierra el modal principal y resetea el formulario
+    const handleClose = () => {
+        setOpen(false);
+        resetForm();
+    };
+
+    // Abre el modal para CREAR un nuevo paciente
+    const handleOpenCreate = () => {
+        resetForm();
         setOpen(true);
     };
-    const handleClose = () => setOpen(false);
-
-    const handleChange = (e) => {
-        setNewPaciente({ ...newPaciente, [e.target.name]: e.target.value });
-    };
-
+    
+    // Abre el modal para EDITAR un paciente existente
     const handleOpenEdit = (paciente) => {
         setEditingId(paciente.id_paciente);
-        // Formateamos la fecha para que sea compatible con el input type="date" (YYYY-MM-DD)
         const formattedDate = paciente.fecha_nacimiento ? new Date(paciente.fecha_nacimiento).toISOString().split('T')[0] : '';
         setFormData({
             nombre: paciente.nombre || '',
@@ -67,15 +73,17 @@ const PacientesPage = () => {
         setOpen(true);
     };
 
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
+    // Envía el formulario (ya sea para crear o editar)
     const handleSubmit = async () => {
         try {
             if (editingId) {
-                // Si hay un ID, estamos actualizando (PUT)
                 await api.put(`/pacientes/${editingId}`, formData);
                 alert('¡Paciente actualizado exitosamente!');
             } else {
-                // Si no hay ID, estamos creando (POST)
                 await api.post('/pacientes', formData);
                 alert('¡Paciente registrado exitosamente!');
             }
@@ -87,17 +95,19 @@ const PacientesPage = () => {
         }
     };
 
-    // --- NUEVAS FUNCIONES PARA MANEJAR EL BORRADO ---
+    // Abre el diálogo de confirmación para eliminar
     const handleDeleteOpen = (paciente) => {
         setPacienteToDelete(paciente);
         setDeleteConfirmOpen(true);
     };
 
+    // Cierra el diálogo de confirmación
     const handleDeleteClose = () => {
         setDeleteConfirmOpen(false);
         setPacienteToDelete(null);
     };
 
+    // Confirma y ejecuta la eliminación
     const handleDeleteConfirm = async () => {
         if (!pacienteToDelete) return;
         try {
@@ -111,14 +121,13 @@ const PacientesPage = () => {
         }
     };
 
-
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(dateString).toLocaleDateString('es-GT', options);
     };
 
-return (
+    return (
         <Box sx={{ flexGrow: 1, p: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
@@ -148,7 +157,6 @@ return (
                                 <TableCell>{paciente.sexo}</TableCell>
                                 <TableCell>{paciente.telefono}</TableCell>
                                 <TableCell align="right">
-                                    {/* <-- MODIFICADO: Añadimos los onClick a los botones --> */}
                                     <IconButton color="primary" onClick={() => handleOpenEdit(paciente)}><EditIcon /></IconButton>
                                     <IconButton color="error" onClick={() => handleDeleteOpen(paciente)}><DeleteOutlineIcon /></IconButton>
                                 </TableCell>
@@ -160,7 +168,6 @@ return (
 
             {/* Modal para Registrar y Editar Paciente */}
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                {/* <-- MODIFICADO: Título dinámico --> */}
                 <DialogTitle>{editingId ? 'Editar Paciente' : 'Registrar Nuevo Paciente'}</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -178,7 +185,7 @@ return (
                 </DialogActions>
             </Dialog>
 
-            {/* --- NUEVO: Diálogo de Confirmación de Borrado --- */}
+            {/* Diálogo de Confirmación de Borrado */}
             <Dialog open={deleteConfirmOpen} onClose={handleDeleteClose}>
                 <DialogTitle>Confirmar Eliminación</DialogTitle>
                 <DialogContent>
