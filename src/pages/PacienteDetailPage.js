@@ -11,14 +11,17 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import api from '../utils/api';
+import { jwtDecode } from 'jwt-decode';
 
 
 const PacienteDetailPage = () => {
     const { id } = useParams();
     const [paciente, setPaciente] = useState(null);
     const [familiares, setFamiliares] = useState([]);
-    const [historial, setHistorial] = useState([]); 
+    const [historial, setHistorial] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [userRole, setUserRole] = useState(null);
 
     // Estados para Condiciones y Tratamientos
     const [condiciones, setCondiciones] = useState([]);
@@ -37,7 +40,7 @@ const PacienteDetailPage = () => {
                 api.get(`/pacientes/${id}`),
                 api.get(`/pacientes/${id}/familiares`),
                 api.get(`/pacientes/${id}/solicitudes`),
-                api.get(`/pacientes/${id}/condiciones`) 
+                api.get(`/pacientes/${id}/condiciones`)
             ]);
             setPaciente(pacienteRes.data);
             setFamiliares(familiaresRes.data);
@@ -51,8 +54,16 @@ const PacienteDetailPage = () => {
     };
 
     useEffect(() => {
+        // --- NUEVO: Leemos el token para saber el rol del usuario ---
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decoded = jwtDecode(token);
+            setUserRole(decoded.user.nombre_rol);
+        }
+
         fetchData();
     }, [id]);
+
 
     // --- Funciones para CRUD de Familiares ---
     const handleOpenFamiliarModal = async () => {
@@ -116,7 +127,7 @@ const PacienteDetailPage = () => {
             }
         }
     };
-    
+
     // --- Funciones para CRUD de Tratamientos Fijos ---
     const handleOpenTratamientoModal = (id_condicion, data = null) => setTratamientoModal({ open: true, data, id_condicion });
     const handleCloseTratamientoModal = () => setTratamientoModal({ open: false, data: null, id_condicion: null });
@@ -203,7 +214,7 @@ const PacienteDetailPage = () => {
                             </Box>
                             <Typography variant="body2" color="textSecondary">Diagnosticado: {formatDate(condicion.fecha_diagnostico)}</Typography>
                             <Typography variant="body1" sx={{ my: 1 }}><strong>Observaciones:</strong> {condicion.observaciones || 'N/A'}</Typography>
-                            
+
                             <Divider sx={{ my: 1 }} />
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
                                 <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Tratamientos Fijos</Typography>
@@ -247,7 +258,7 @@ const PacienteDetailPage = () => {
                             <Typography variant="subtitle2" gutterBottom>Detalles de la Solicitud</Typography>
                             <Typography variant="body2"><strong>Médico General:</strong> {solicitud.nombre_medico_general}</Typography>
                             <Typography variant="body2"><strong>Especialista Asignado:</strong> {solicitud.nombre_medico_especialista || 'No asignado'}</Typography>
-                            
+
                             {solicitud.visita ? (
                                 <>
                                     <Divider sx={{ my: 2 }} />
@@ -271,7 +282,7 @@ const PacienteDetailPage = () => {
                                     )}
                                 </>
                             ) : (
-                                <Typography variant="body2" sx={{mt: 2, fontStyle: 'italic'}}>No se ha registrado una visita para esta solicitud.</Typography>
+                                <Typography variant="body2" sx={{ mt: 2, fontStyle: 'italic' }}>No se ha registrado una visita para esta solicitud.</Typography>
                             )}
                         </AccordionDetails>
                     </Accordion>
@@ -285,9 +296,11 @@ const PacienteDetailPage = () => {
                     <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
                         Familiares Asignados
                     </Typography>
+                    {userRole === 'Administración' && (
                     <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={handleOpenFamiliarModal}>
                         Asignar Familiar
                     </Button>
+                    )}
                 </Box>
                 <Paper sx={{ p: 2 }}>
                     <List>
@@ -296,9 +309,11 @@ const PacienteDetailPage = () => {
                                 <React.Fragment key={familiar.id_familiar}>
                                     <ListItem
                                         secondaryAction={
+                                            userRole === 'Administración' &&(
                                             <IconButton edge="end" color="error" onClick={() => handleUnlinkFamiliar(familiar.id_familiar)}>
                                                 <DeleteIcon />
                                             </IconButton>
+                                            )
                                         }
                                     >
                                         <ListItemText
