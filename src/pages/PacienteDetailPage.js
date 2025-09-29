@@ -306,7 +306,7 @@ const PacienteDetailPage = () => {
                 <Typography>No hay historial de solicitudes para este paciente.</Typography>
             )}
 
-                <Box sx={{ mt: 4 }}>
+                          <Box sx={{ mt: 4 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
                         Familiares Asignados
@@ -327,6 +327,7 @@ const PacienteDetailPage = () => {
                                             primary={
                                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                     {familiar.nombre}
+                                                    {/* --- CORRECCIÓN AQUÍ: Muestra la etiqueta si es el principal --- */}
                                                     {familiar.es_contacto_principal && (
                                                         <Chip 
                                                             icon={<StarIcon />} 
