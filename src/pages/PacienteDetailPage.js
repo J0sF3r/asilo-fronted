@@ -68,7 +68,7 @@ const PacienteDetailPage = () => {
     // --- Funciones para CRUD de Familiares ---
     const handleOpenFamiliarModal = async () => {
         try {
-            const res = await api.get(`/familiares/disponibles/${id}`); 
+            const res = await api.get(`/familiares/disponibles/${id}`);
             const assignedIds = new Set(familiares.map(f => f.id_familiar));
             setAvailableFamiliares(res.data.filter(f => !assignedIds.has(f.id_familiar)));
             setFamiliarModalOpen(true);
@@ -166,6 +166,20 @@ const PacienteDetailPage = () => {
         if (status === 'cancelada') color = 'error';
         return <Chip label={status} color={color} size="small" />;
     };
+
+    // --- NUEVO: Función para designar el contacto principal ---
+    const handleSetPrincipal = async (id_familiar) => {
+        if (window.confirm('¿Estás seguro de que quieres designar a este familiar como el contacto principal?')) {
+            try {
+                await api.put(`/pacientes/${id}/familiares/${id_familiar}/principal`);
+                fetchData(); // Refrescamos los datos para ver el cambio
+            } catch (err) {
+                console.error("Error al designar el contacto principal:", err);
+                alert("No se pudo actualizar el contacto principal.");
+            }
+        }
+    };
+
 
     if (loading) { return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>; }
     if (!paciente) { return <Typography variant="h5" sx={{ p: 3 }}>Paciente no encontrado.</Typography>; }
@@ -297,9 +311,9 @@ const PacienteDetailPage = () => {
                         Familiares Asignados
                     </Typography>
                     {userRole === 'Administración' && (
-                    <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={handleOpenFamiliarModal}>
-                        Asignar Familiar
-                    </Button>
+                        <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={handleOpenFamiliarModal}>
+                            Asignar Familiar
+                        </Button>
                     )}
                 </Box>
                 <Paper sx={{ p: 2 }}>
@@ -309,15 +323,29 @@ const PacienteDetailPage = () => {
                                 <React.Fragment key={familiar.id_familiar}>
                                     <ListItem
                                         secondaryAction={
-                                            userRole === 'Administración' &&(
-                                            <IconButton edge="end" color="error" onClick={() => handleUnlinkFamiliar(familiar.id_familiar)}>
-                                                <DeleteIcon />
-                                            </IconButton>
+                                            userRole === 'Administración' && (
+                                                <IconButton edge="end" color="error" onClick={() => handleUnlinkFamiliar(familiar.id_familiar)}>
+                                                    <DeleteIcon />
+                                                </IconButton>
                                             )
                                         }
                                     >
                                         <ListItemText
-                                            primary={familiar.nombre}
+                                            primary={
+                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    {familiar.nombre}
+                                                    {/* --- CAMBIO: Muestra una etiqueta si es el principal --- */}
+                                                    {familiar.es_contacto_principal && (
+                                                        <Chip
+                                                            icon={<StarIcon />}
+                                                            label="Contacto Principal"
+                                                            size="small"
+                                                            color="primary"
+                                                            sx={{ ml: 2 }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            }
                                             secondary={
                                                 <React.Fragment>
                                                     <Typography component="span" variant="body2" color="text.primary">
@@ -329,6 +357,19 @@ const PacienteDetailPage = () => {
                                                 </React.Fragment>
                                             }
                                         />
+                                        {userRole === 'Administración' && (
+                                            <Box>
+                                                {/* --- CAMBIO: Botón para designar como principal --- */}
+                                                {!familiar.es_contacto_principal && (
+                                                    <Button size="small" sx={{ mr: 1 }} onClick={() => handleSetPrincipal(familiar.id_familiar)}>
+                                                        Designar Principal
+                                                    </Button>
+                                                )}
+                                                <IconButton edge="end" color="error" onClick={() => handleUnlinkFamiliar(familiar.id_familiar)}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Box>
+                                        )}
                                     </ListItem>
                                     {index < familiares.length - 1 && <Divider />}
                                 </React.Fragment>
