@@ -383,6 +383,10 @@ const AgendaCitasPage = () => {
 };
 
 const HistorialPacienteModal = ({ open, onClose, historial, loading, nombrePaciente }) => {
+    // La variable 'historial' ahora contiene { visitas: [], condiciones: [] }
+    const visitas = historial?.visitas || [];
+    const condiciones = historial?.condiciones || [];
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>Historial Médico de: <strong>{nombrePaciente}</strong></DialogTitle>
@@ -390,25 +394,41 @@ const HistorialPacienteModal = ({ open, onClose, historial, loading, nombrePacie
                 {loading ? (
                     <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>
                 ) : (
-                    <List>
-                        {historial && historial.length > 0 ? historial.map(visita => (
-                            <React.Fragment key={visita.id_visita}>
-                                <Paper sx={{ p: 2, my: 1 }} variant="outlined">
-                                    <Typography variant="h6">Fecha: {new Date(visita.fecha_visita).toLocaleDateString('es-GT')}</Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Diagnóstico: <span style={{ fontWeight: 'normal' }}>{visita.diagnostico || 'No especificado'}</span></Typography>
-                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Atendido por: {visita.nombre_medico || 'N/A'}</Typography>
-                                    {visita.examenes && visita.examenes.length > 0 && (
-                                        <><Typography variant="subtitle2" sx={{ mt: 1 }}>Exámenes Realizados:</Typography>
-                                        <List dense>{visita.examenes.map(ex => (<ListItemText key={ex.nombre_examen} primary={`- ${ex.nombre_examen}`} secondary={`Resultado: ${ex.resultado || 'Pendiente'}`} />))}</List></>
-                                    )}
-                                    {visita.medicamentos && visita.medicamentos.length > 0 && (
-                                        <><Typography variant="subtitle2" sx={{ mt: 1 }}>Medicamentos Recetados:</Typography>
-                                        <List dense>{visita.medicamentos.map(med => (<ListItemText key={med.nombre} primary={`- ${med.nombre}`} secondary={`(${med.cantidad} - ${med.tiempo_aplicacion})`} />))}</List></>
+                    <Grid container spacing={3}>
+                        {/* Columna para Condiciones de Base */}
+                        <Grid item xs={12} md={5}>
+                            <Typography variant="h6" gutterBottom>Condiciones de Base</Typography>
+                            {condiciones.length > 0 ? condiciones.map(cond => (
+                                <Paper key={cond.id_condicion} sx={{ p: 2, mb: 1 }} variant="outlined">
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{cond.nombre_condicion}</Typography>
+                                    <Typography variant="body2" color="text.secondary">Diagnosticado: {new Date(cond.fecha_diagnostico).toLocaleDateString('es-GT')}</Typography>
+                                    {cond.tratamientos && cond.tratamientos.length > 0 && (
+                                        <>
+                                            <Typography variant="caption" sx={{ mt: 1, fontWeight: 'bold' }}>Tratamientos Fijos:</Typography>
+                                            <List dense disablePadding>
+                                                {cond.tratamientos.map(t => (
+                                                    <ListItemText key={t.id_tratamiento} sx={{ pl: 1 }} primary={`• ${t.nombre_medicamento}`} secondary={`${t.dosis} - ${t.frecuencia}`} />
+                                                ))}
+                                            </List>
+                                        </>
                                     )}
                                 </Paper>
-                            </React.Fragment>
-                        )) : <Typography>No se encontró historial para este paciente.</Typography>}
-                    </List>
+                            )) : <Typography variant="body2" sx={{ fontStyle: 'italic' }}>No hay condiciones de base.</Typography>}
+                        </Grid>
+
+                        {/* Columna para Historial de Visitas */}
+                        <Grid item xs={12} md={7}>
+                            <Typography variant="h6" gutterBottom>Historial de Visitas</Typography>
+                            {visitas.length > 0 ? visitas.map(visita => (
+                                <Paper key={visita.id_visita} sx={{ p: 2, mb: 1 }} variant="outlined">
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Fecha: {new Date(visita.fecha_visita).toLocaleDateString('es-GT')}</Typography>
+                                    <Typography><strong>Diagnóstico:</strong> {visita.diagnostico || 'No especificado'}</Typography>
+                                    <Typography variant="body2" color="text.secondary">Atendido por: Dr./Dra. {visita.nombre_medico || 'N/A'}</Typography>
+                                    {/* Aquí podrías añadir examenes y medicamentos de la visita si los necesitas */}
+                                </Paper>
+                            )) : <Typography variant="body2" sx={{ fontStyle: 'italic' }}>No hay visitas anteriores.</Typography>}
+                        </Grid>
+                    </Grid>
                 )}
             </DialogContent>
             <DialogActions>
@@ -417,5 +437,4 @@ const HistorialPacienteModal = ({ open, onClose, historial, loading, nombrePacie
         </Dialog>
     );
 };
-
 export default AgendaCitasPage;
