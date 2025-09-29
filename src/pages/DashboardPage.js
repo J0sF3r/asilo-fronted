@@ -16,22 +16,17 @@ const DashboardPage = () => {
         }
     }, []);
 
+    // --- LÓGICA DE FILTRADO CORREGIDA ---
     const dashboardItems = userRole
         ? allMenuItems.filter(item => {
-            // Condición 1: El rol debe tener permiso
-            if (!item.allowedRoles.includes(userRole)) {
-                return false;
-            }
-            // Condición 2 (CORREGIDA): Ocultamos los portales solo si el rol NO es Administración
-            if (userRole !== 'Administración' && ['/laboratorio', '/farmacia'].includes(item.path)) {
-                return false;
-            }
-            // Condición 3: Siempre ocultamos la tarjeta del propio dashboard
-            if (item.path === '/dashboard') {
-                return false;
-            }
-            return true;
-          })
+            // La única regla que necesitamos es si el rol está permitido.
+            const hasPermission = item.allowedRoles.includes(userRole);
+            
+            // Y no mostramos el botón del propio dashboard.
+            const isNotDashboardButton = item.path !== '/dashboard';
+
+            return hasPermission && isNotDashboardButton;
+        })
         : [];
 
     return (
@@ -43,6 +38,7 @@ const DashboardPage = () => {
                 Facilitando tu labor con cada módulo, Tu espacio de cuidado, a un clic
             </Typography>
 
+            {/* Este componente solo se muestra si el rol es Admin o Médico General */}
             {(userRole === 'Administración' || userRole === 'Medico General') && <PendientesRevision />}
 
             <Grid container spacing={4}>
