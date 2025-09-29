@@ -55,7 +55,7 @@ const PacientesPage = () => {
 
 
     const resetForm = () => {
-        setFormData({ nombre: '', fecha_nacimiento: '', sexo: '', direccion: '', telefono: '', email: '' });
+        setFormData({ nombre: '', fecha_nacimiento: '', fecha_ingreso: '', sexo: '', direccion: '', telefono: '', email: '' });
         setIsEditing(false);
         setCurrentPacienteId(null);
     };
