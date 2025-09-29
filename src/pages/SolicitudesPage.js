@@ -70,17 +70,21 @@ const SolicitudesPage = () => {
 
     const handleOpenModal = (solicitud = null) => {
         setCurrentSolicitud(solicitud);
-        if (solicitud) {
+        if (solicitud) { // Editando/Procesando una solicitud existente
             setFormData({
+                // Campos para Medico General
                 especialidad_requerida: solicitud.especialidad_requerida || '',
                 id_enfermero: solicitud.id_enfermero || '',
                 diagnostico_general: solicitud.diagnostico_general || '',
+                // Campos para Fundación/Admin
                 id_medico_especialista: solicitud.id_medico_especialista || '',
                 fecha_visita: '',
-                lugar: '',
-                costo_consulta: '' // Se inicia vacío
+                lugar: 'Hospital General del Sur', // Valor por defecto
+                costo_consulta: '',
+                descuento_porcentaje: 0, 
+                costo_final_con_descuento: ''
             });
-        } else {
+        } else { // Creando una nueva solicitud
             setFormData({
                 id_paciente: '',
                 id_medico_general: '',
@@ -92,20 +96,29 @@ const SolicitudesPage = () => {
 
     const handleCloseModal = () => setModalOpen(false);
     
-    // --- ESTA ES LA FUNCIÓN MODIFICADA ---
     const handleChange = (e) => {
         const { name, value } = e.target;
-        // Actualización normal del estado del formulario
-        setFormData(prev => ({ ...prev, [name]: value }));
+        
+        setFormData(prev => {
+            const newForm = { ...prev, [name]: value };
 
-        // Lógica especial si se cambia el médico especialista
-        if (name === 'id_medico_especialista') {
-            const medico = medicosEspecialistas.find(m => m.id_medico === parseInt(value, 10));
-            if (medico) {
-                // Actualiza el costo en el estado del formulario
-                setFormData(prev => ({ ...prev, costo_consulta: medico.costo_consulta || '' }));
+            if (name === 'id_medico_especialista') {
+                const medico = medicosEspecialistas.find(m => m.id_medico === parseInt(value, 10));
+                if (medico) {
+                    newForm.costo_consulta = medico.costo_consulta || '';
+                }
             }
-        }
+
+            if (name === 'costo_consulta' || name === 'descuento_porcentaje' || name === 'id_medico_especialista') {
+                const costo = parseFloat(newForm.costo_consulta) || 0;
+                const descuento = parseFloat(newForm.descuento_porcentaje) || 0;
+                if (descuento >= 0 && descuento <= 100) {
+                    const costoFinal = costo - (costo * (descuento / 100));
+                    newForm.costo_final_con_descuento = costoFinal.toFixed(2);
+                }
+            }
+            return newForm;
+        });
     };
 
     const handleSubmit = async () => {
@@ -117,7 +130,11 @@ const SolicitudesPage = () => {
                 await api.put(`/solicitudes/${currentSolicitud.id_solicitud}/aprobar`, formData);
                 alert('¡Solicitud aprobada exitosamente!');
             } else if ((userRole === 'Fundación' || userRole === 'Administración') && currentSolicitud.estado === 'aprobada') {
-                await api.post(`/solicitudes/${currentSolicitud.id_solicitud}/programar`, formData);
+                const dataToSend = { 
+                    ...formData, 
+                    costo_final_con_descuento: formData.costo_final_con_descuento || formData.costo_consulta 
+                };
+                await api.post(`/solicitudes/${currentSolicitud.id_solicitud}/programar`, dataToSend);
                 alert('¡Cita programada exitosamente!');
             }
             handleCloseModal();
@@ -161,7 +178,7 @@ const SolicitudesPage = () => {
                         </FormControl>
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField name="motivo" label="Motivo de la Solicitud" fullWidth multiline rows={3} onChange={handleChange} value={formData.motivo || ''} variant="filled"/>
+                        <TextField name="motivo" label="Motivo de la Solicitud" fullWidth multiline rows={3} onChange={handleChange} value={formData.motivo || ''} variant="filled" />
                     </Grid>
                 </Grid>
             );
@@ -171,10 +188,10 @@ const SolicitudesPage = () => {
             return (
                 <Grid container spacing={3} sx={{ pt: 1 }}>
                     <Grid item xs={12}>
-                        <TextField name="especialidad_requerida" label="Especialidad Requerida" fullWidth onChange={handleChange} value={formData.especialidad_requerida || ''} variant="filled"/>
+                        <TextField name="especialidad_requerida" label="Especialidad Requerida" fullWidth onChange={handleChange} value={formData.especialidad_requerida || ''} variant="filled" />
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField name="diagnostico_general" label="Diagnóstico Preliminar" fullWidth multiline rows={3} onChange={handleChange} value={formData.diagnostico_general || ''} variant="filled"/>
+                        <TextField name="diagnostico_general" label="Diagnóstico Preliminar" fullWidth multiline rows={3} onChange={handleChange} value={formData.diagnostico_general || ''} variant="filled" />
                     </Grid>
                     <Grid item xs={12}>
                         <FormControl fullWidth required>
@@ -191,44 +208,38 @@ const SolicitudesPage = () => {
 
         if ((userRole === 'Fundación' || userRole === 'Administración') && currentSolicitud.estado === 'aprobada') {
             return (
-                <Grid container spacing={3} sx={{ pt: 1 }}>
+                <Grid container spacing={2} sx={{ pt: 1 }}>
                     <Grid item xs={12}>
                         <FormControl fullWidth required>
-                            <InputLabel variant="standard" htmlFor="medico-especialista-select-native">Médico Especialista</InputLabel>
+                            <InputLabel>Médico Especialista</InputLabel>
                             <Select
-                                native
+                                name="id_medico_especialista"
                                 value={formData.id_medico_especialista || ''}
-                                // Aquí se conecta la función inteligente
-                                onChange={handleChange} 
-                                inputProps={{ name: 'id_medico_especialista', id: 'medico-especialista-select-native' }}
+                                onChange={handleChange}
+                                label="Médico Especialista"
                             >
-                                <option aria-label="None" value="" />
                                 {medicosEspecialistas.map(m => (
-                                    <option key={m.id_medico} value={m.id_medico}>
+                                    <MenuItem key={m.id_medico} value={m.id_medico}>
                                         {m.nombre} ({m.especialidad}) - Q{parseFloat(m.costo_consulta || 0).toFixed(2)}
-                                    </option>
+                                    </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField name="fecha_visita" label="Fecha y Hora" type="datetime-local" fullWidth required InputLabelProps={{ shrink: true }} onChange={handleChange} value={formData.fecha_visita || ''} variant="filled"/>
+                        <TextField name="fecha_visita" label="Fecha y Hora" type="datetime-local" fullWidth required InputLabelProps={{ shrink: true }} onChange={handleChange} value={formData.fecha_visita || ''} />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField name="lugar" label="Lugar de la Cita" fullWidth required onChange={handleChange} value={formData.lugar || ''} variant="filled"/>
+                        <TextField name="lugar" label="Lugar de la Cita" fullWidth required onChange={handleChange} value={formData.lugar || ''} />
                     </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            name="costo_consulta"
-                            label="Costo de la Consulta (Q)"
-                            type="number"
-                            fullWidth
-                            required
-                            onChange={handleChange}
-                            // El valor se rellena automáticamente desde el estado
-                            value={formData.costo_consulta || ''} 
-                            variant="filled"
-                        />
+                    <Grid item xs={12} sm={4}>
+                        <TextField name="costo_consulta" label="Costo Base (Q)" type="number" fullWidth required onChange={handleChange} value={formData.costo_consulta || ''} />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <TextField name="descuento_porcentaje" label="Descuento (%)" type="number" fullWidth onChange={handleChange} value={formData.descuento_porcentaje || ''} />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <TextField name="costo_final_con_descuento" label="Costo Final (Q)" type="number" fullWidth required InputProps={{ readOnly: true }} value={formData.costo_final_con_descuento || ''} />
                     </Grid>
                 </Grid>
             );
