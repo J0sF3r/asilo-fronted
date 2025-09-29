@@ -68,7 +68,7 @@ const PacienteDetailPage = () => {
     // --- Funciones para CRUD de Familiares ---
     const handleOpenFamiliarModal = async () => {
         try {
-            const res = await api.get('/familiares');
+            const res = await api.get(`/familiares/disponibles/${id}`); 
             const assignedIds = new Set(familiares.map(f => f.id_familiar));
             setAvailableFamiliares(res.data.filter(f => !assignedIds.has(f.id_familiar)));
             setFamiliarModalOpen(true);
