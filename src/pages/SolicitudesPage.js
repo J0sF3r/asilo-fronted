@@ -1,5 +1,3 @@
-// --- CÓDIGO COMPLETO Y OPTIMIZADO ---
-
 import React, { useState, useEffect } from 'react';
 import {
     Typography, Box, Button, Paper, Table, TableBody, TableCell,
@@ -32,8 +30,6 @@ const SolicitudesPage = () => {
 
         const fetchInitialData = async () => {
             try {
-                // El rol de Admin/Fundación necesita todos los datos para los formularios
-                // El rol de Admin necesita todos los datos para los formularios
                 if (role === 'Administración') {
                     const [solicitudesRes, pacientesRes, medicosRes, enfermerosRes] = await Promise.all([
                         api.get('/solicitudes'), api.get('/pacientes'), api.get('/medicos'), api.get('/enfermeros')
@@ -44,7 +40,6 @@ const SolicitudesPage = () => {
                     setMedicosGenerales(medicosRes.data.filter(m => m.tipo === 'General'));
                     setMedicosEspecialistas(medicosRes.data.filter(m => m.tipo === 'Especialista'));
                 }
-                // El rol de Fundación necesita casi todo, EXCEPTO la lista de pacientes
                 else if (role === 'Fundación') {
                      const [solicitudesRes, medicosRes, enfermerosRes] = await Promise.all([
                         api.get('/solicitudes'), api.get('/medicos'), api.get('/enfermeros')
@@ -54,7 +49,6 @@ const SolicitudesPage = () => {
                     setMedicosGenerales(medicosRes.data.filter(m => m.tipo === 'General'));
                     setMedicosEspecialistas(medicosRes.data.filter(m => m.tipo === 'Especialista'));
                 }
-                // El Médico General solo necesita la lista de solicitudes y de enfermeros
                 else if (role === 'Medico General') {
                     const [solicitudesRes, enfermerosRes] = await Promise.all([
                         api.get('/solicitudes'), api.get('/enfermeros')
@@ -83,7 +77,8 @@ const SolicitudesPage = () => {
                 diagnostico_general: solicitud.diagnostico_general || '',
                 id_medico_especialista: solicitud.id_medico_especialista || '',
                 fecha_visita: '',
-                lugar: ''
+                lugar: '',
+                costo_consulta: '' // Se inicia vacío
             });
         } else {
             setFormData({
@@ -96,7 +91,22 @@ const SolicitudesPage = () => {
     };
 
     const handleCloseModal = () => setModalOpen(false);
-    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+    
+    // --- ESTA ES LA FUNCIÓN MODIFICADA ---
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        // Actualización normal del estado del formulario
+        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Lógica especial si se cambia el médico especialista
+        if (name === 'id_medico_especialista') {
+            const medico = medicosEspecialistas.find(m => m.id_medico === parseInt(value, 10));
+            if (medico) {
+                // Actualiza el costo en el estado del formulario
+                setFormData(prev => ({ ...prev, costo_consulta: medico.costo_consulta || '' }));
+            }
+        }
+    };
 
     const handleSubmit = async () => {
         try {
@@ -135,12 +145,7 @@ const SolicitudesPage = () => {
                     <Grid item xs={12}>
                         <FormControl fullWidth required>
                             <InputLabel variant="standard" htmlFor="paciente-select-native">Paciente</InputLabel>
-                            <Select
-                                native
-                                value={formData.id_paciente || ''}
-                                onChange={handleChange}
-                                inputProps={{ name: 'id_paciente', id: 'paciente-select-native' }}
-                            >
+                            <Select native value={formData.id_paciente || ''} onChange={handleChange} inputProps={{ name: 'id_paciente', id: 'paciente-select-native' }}>
                                 <option aria-label="None" value="" />
                                 {pacientes.map(p => (<option key={p.id_paciente} value={p.id_paciente}>{p.nombre}</option>))}
                             </Select>
@@ -149,12 +154,7 @@ const SolicitudesPage = () => {
                     <Grid item xs={12}>
                         <FormControl fullWidth required>
                             <InputLabel variant="standard" htmlFor="medico-general-select-native">Médico General</InputLabel>
-                            <Select
-                                native
-                                value={formData.id_medico_general || ''}
-                                onChange={handleChange}
-                                inputProps={{ name: 'id_medico_general', id: 'medico-general-select-native' }}
-                            >
+                            <Select native value={formData.id_medico_general || ''} onChange={handleChange} inputProps={{ name: 'id_medico_general', id: 'medico-general-select-native' }}>
                                 <option aria-label="None" value="" />
                                 {medicosGenerales.map(m => (<option key={m.id_medico} value={m.id_medico}>{m.nombre}</option>))}
                             </Select>
@@ -173,18 +173,13 @@ const SolicitudesPage = () => {
                     <Grid item xs={12}>
                         <TextField name="especialidad_requerida" label="Especialidad Requerida" fullWidth onChange={handleChange} value={formData.especialidad_requerida || ''} variant="filled"/>
                     </Grid>
-                     <Grid item xs={12}>
+                    <Grid item xs={12}>
                         <TextField name="diagnostico_general" label="Diagnóstico Preliminar" fullWidth multiline rows={3} onChange={handleChange} value={formData.diagnostico_general || ''} variant="filled"/>
                     </Grid>
                     <Grid item xs={12}>
                         <FormControl fullWidth required>
                             <InputLabel variant="standard" htmlFor="enfermero-select-native">Enfermero/a</InputLabel>
-                            <Select
-                                native
-                                value={formData.id_enfermero || ''}
-                                onChange={handleChange}
-                                inputProps={{ name: 'id_enfermero', id: 'enfermero-select-native' }}
-                            >
+                            <Select native value={formData.id_enfermero || ''} onChange={handleChange} inputProps={{ name: 'id_enfermero', id: 'enfermero-select-native' }}>
                                 <option aria-label="None" value="" />
                                 {enfermeros.map(e => (<option key={e.id_enfermero} value={e.id_enfermero}>{e.nombre}</option>))}
                             </Select>
@@ -203,11 +198,16 @@ const SolicitudesPage = () => {
                             <Select
                                 native
                                 value={formData.id_medico_especialista || ''}
-                                onChange={handleChange}
+                                // Aquí se conecta la función inteligente
+                                onChange={handleChange} 
                                 inputProps={{ name: 'id_medico_especialista', id: 'medico-especialista-select-native' }}
                             >
                                 <option aria-label="None" value="" />
-                                {medicosEspecialistas.map(m => (<option key={m.id_medico} value={m.id_medico}>{m.nombre} ({m.especialidad})</option>))}
+                                {medicosEspecialistas.map(m => (
+                                    <option key={m.id_medico} value={m.id_medico}>
+                                        {m.nombre} ({m.especialidad}) - Q{parseFloat(m.costo_consulta || 0).toFixed(2)}
+                                    </option>
+                                ))}
                             </Select>
                         </FormControl>
                     </Grid>
@@ -218,7 +218,17 @@ const SolicitudesPage = () => {
                         <TextField name="lugar" label="Lugar de la Cita" fullWidth required onChange={handleChange} value={formData.lugar || ''} variant="filled"/>
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField name="costo_consulta" label="Costo de la Consulta (Q)" type="number" fullWidth required onChange={handleChange} value={formData.costo_consulta || ''} variant="filled"/>
+                        <TextField
+                            name="costo_consulta"
+                            label="Costo de la Consulta (Q)"
+                            type="number"
+                            fullWidth
+                            required
+                            onChange={handleChange}
+                            // El valor se rellena automáticamente desde el estado
+                            value={formData.costo_consulta || ''} 
+                            variant="filled"
+                        />
                     </Grid>
                 </Grid>
             );
