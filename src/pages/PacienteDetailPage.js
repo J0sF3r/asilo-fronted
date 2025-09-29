@@ -172,7 +172,7 @@ const PacienteDetailPage = () => {
         if (window.confirm('¿Estás seguro de que quieres designar a este familiar como el contacto principal?')) {
             try {
                 await api.put(`/pacientes/${id}/familiares/${id_familiar}/principal`);
-                fetchData(); // Refrescamos los datos para ver el cambio
+                fetchData();
             } catch (err) {
                 console.error("Error al designar el contacto principal:", err);
                 alert("No se pudo actualizar el contacto principal.");
@@ -305,7 +305,7 @@ const PacienteDetailPage = () => {
                 <Typography>No hay historial de solicitudes para este paciente.</Typography>
             )}
 
-            <Box sx={{ mt: 4 }}>
+                <Box sx={{ mt: 4 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
                         Familiares Asignados
@@ -321,27 +321,18 @@ const PacienteDetailPage = () => {
                         {familiares.length > 0 ? (
                             familiares.map((familiar, index) => (
                                 <React.Fragment key={familiar.id_familiar}>
-                                    <ListItem
-                                        secondaryAction={
-                                            userRole === 'Administración' && (
-                                                <IconButton edge="end" color="error" onClick={() => handleUnlinkFamiliar(familiar.id_familiar)}>
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            )
-                                        }
-                                    >
+                                    <ListItem>
                                         <ListItemText
                                             primary={
                                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                     {familiar.nombre}
-                                                    {/* --- CAMBIO: Muestra una etiqueta si es el principal --- */}
                                                     {familiar.es_contacto_principal && (
-                                                        <Chip
-                                                            icon={<StarIcon />}
-                                                            label="Contacto Principal"
-                                                            size="small"
-                                                            color="primary"
-                                                            sx={{ ml: 2 }}
+                                                        <Chip 
+                                                            icon={<StarIcon />} 
+                                                            label="Contacto Principal" 
+                                                            size="small" 
+                                                            color="primary" 
+                                                            sx={{ ml: 2 }} 
                                                         />
                                                     )}
                                                 </Box>
@@ -358,10 +349,9 @@ const PacienteDetailPage = () => {
                                             }
                                         />
                                         {userRole === 'Administración' && (
-                                            <Box>
-                                                {/* --- CAMBIO: Botón para designar como principal --- */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                 {!familiar.es_contacto_principal && (
-                                                    <Button size="small" sx={{ mr: 1 }} onClick={() => handleSetPrincipal(familiar.id_familiar)}>
+                                                    <Button size="small" variant="outlined" sx={{ mr: 1 }} onClick={() => handleSetPrincipal(familiar.id_familiar)}>
                                                         Designar Principal
                                                     </Button>
                                                 )}
