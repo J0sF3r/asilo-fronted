@@ -3,7 +3,7 @@ import { useParams, Link as RouterLink } from 'react-router-dom';
 import {
     Typography, Box, Paper, Grid, List, ListItem, ListItemText, IconButton, Divider, Button,
     Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, MenuItem,
-    Chip, Accordion, AccordionSummary, AccordionDetails, CircularProgress, TextField, startIcon
+    Chip, Accordion, AccordionSummary, AccordionDetails, CircularProgress, TextField, StarIcon
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
