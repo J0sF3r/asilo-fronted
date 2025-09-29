@@ -28,7 +28,8 @@ const PacientesPage = () => {
         sexo: '',
         direccion: '',
         telefono: '',
-        email: ''
+        email: '',
+        fecha_ingreso: ''
     });
 
     const fetchPacientes = async () => {
@@ -145,9 +146,9 @@ const PacientesPage = () => {
                 </Typography>
 
                 {userRole === 'Administración' && (
-                <Button variant="contained" startIcon={<PersonAddAlt1Icon />} onClick={handleOpenCreate}>
-                    Registrar Nuevo Paciente
-                </Button>
+                    <Button variant="contained" startIcon={<PersonAddAlt1Icon />} onClick={handleOpenCreate}>
+                        Registrar Nuevo Paciente
+                    </Button>
                 )}
             </Box>
 
@@ -161,7 +162,7 @@ const PacientesPage = () => {
                             <TableCell sx={{ fontWeight: 'bold' }}>Teléfono</TableCell>
 
                             {userRole === 'Administración' && (
-                            <TableCell sx={{ fontWeight: 'bold' }} align="right">Acciones</TableCell>
+                                <TableCell sx={{ fontWeight: 'bold' }} align="right">Acciones</TableCell>
                             )}
                         </TableRow>
                     </TableHead>
@@ -176,12 +177,12 @@ const PacientesPage = () => {
                                 <TableCell>{formatDate(paciente.fecha_nacimiento)}</TableCell>
                                 <TableCell>{paciente.sexo}</TableCell>
                                 <TableCell>{paciente.telefono}</TableCell>
-                               
-                               {userRole === 'Administración' && (
-                                <TableCell align="right">
-                                    <IconButton color="primary" onClick={() => handleOpenEdit(paciente)}><EditIcon /></IconButton>
-                                    <IconButton color="error" onClick={() => handleDeleteOpen(paciente)}><DeleteOutlineIcon /></IconButton>
-                                </TableCell>
+
+                                {userRole === 'Administración' && (
+                                    <TableCell align="right">
+                                        <IconButton color="primary" onClick={() => handleOpenEdit(paciente)}><EditIcon /></IconButton>
+                                        <IconButton color="error" onClick={() => handleDeleteOpen(paciente)}><DeleteOutlineIcon /></IconButton>
+                                    </TableCell>
                                 )}
                             </TableRow>
                         ))}
@@ -200,6 +201,10 @@ const PacientesPage = () => {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField required name="fecha_nacimiento" label="Fecha de Nacimiento" type="date" InputLabelProps={{ shrink: true }} fullWidth value={formData.fecha_nacimiento} onChange={handleChange} />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField required name="fecha_ingreso" label="Fecha de Ingreso al Asilo" type="date" InputLabelProps={{ shrink: true }} fullWidth value={formData.fecha_ingreso} onChange={handleChange}
+                            />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField name="sexo" label="Sexo" fullWidth value={formData.sexo} onChange={handleChange} />
