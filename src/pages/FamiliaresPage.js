@@ -1,9 +1,8 @@
-// src/pages/FamiliaresPage.js
 import React, { useState, useEffect } from 'react';
 import {
     Typography, Box, Button, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle,
-    DialogContent, DialogActions, TextField, Grid
+    DialogContent, DialogActions, TextField, Grid, DialogContentText
 } from '@mui/material';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,7 +12,14 @@ import api from '../utils/api';
 const FamiliaresPage = () => {
     const [familiares, setFamiliares] = useState([]);
     const [open, setOpen] = useState(false);
-    const [newFamiliar, setNewFamiliar] = useState({
+
+    // --- NUEVO: Estados para manejar la edición y el borrado ---
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentFamiliarId, setCurrentFamiliarId] = useState(null);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [familiarToDelete, setFamiliarToDelete] = useState(null);
+
+    const [formData, setFormData] = useState({
         nombre: '', parentesco: '', telefono: '', email: ''
     });
 
@@ -31,27 +37,81 @@ const FamiliaresPage = () => {
         fetchFamiliares();
     }, []);
 
-    const handleClickOpen = () => {
-        setNewFamiliar({ nombre: '', parentesco: '', telefono: '', email: '' });
+    const resetForm = () => {
+        setFormData({ nombre: '', parentesco: '', telefono: '', email: '' });
+        setIsEditing(false);
+        setCurrentFamiliarId(null);
+    };
+
+    const handleOpenCreate = () => {
+        resetForm();
         setOpen(true);
     };
-    const handleClose = () => setOpen(false);
 
-    const handleChange = (e) => {
-        setNewFamiliar({ ...newFamiliar, [e.target.name]: e.target.value });
+    const handleClose = () => {
+        setOpen(false);
+        resetForm();
     };
 
+    // --- NUEVO: Función para abrir el modal en modo edición ---
+    const handleOpenEdit = (familiar) => {
+        setIsEditing(true);
+        setCurrentFamiliarId(familiar.id_familiar);
+        setFormData({
+            nombre: familiar.nombre,
+            parentesco: familiar.parentesco,
+            telefono: familiar.telefono,
+            email: familiar.email
+        });
+        setOpen(true);
+    };
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    // --- MODIFICADO: handleSubmit ahora crea o actualiza ---
     const handleSubmit = async () => {
         try {
-            await api.post('/familiares', newFamiliar);
+            if (isEditing) {
+                await api.put(`/familiares/${currentFamiliarId}`, formData);
+                alert('¡Familiar actualizado exitosamente!');
+            } else {
+                await api.post('/familiares', formData);
+                alert('¡Familiar registrado exitosamente!');
+            }
             handleClose();
             fetchFamiliares();
-            alert('¡Familiar registrado exitosamente!');
         } catch (err) {
             console.error("Error al registrar el familiar:", err);
             alert('Error al registrar el familiar. Verifique los datos.');
         }
     };
+
+    // --- NUEVO: Funciones para manejar la eliminación ---
+    const handleDeleteOpen = (familiar) => {
+        setFamiliarToDelete(familiar);
+        setDeleteConfirmOpen(true);
+    };
+
+    const handleDeleteClose = () => {
+        setDeleteConfirmOpen(false);
+        setFamiliarToDelete(null);
+    };
+
+    const handleDeleteConfirm = async () => {
+        try {
+            await api.delete(`/familiares/${familiarToDelete.id_familiar}`);
+            alert('Familiar desactivado exitosamente.');
+            fetchFamiliares(); // Para que el familiar "desaparezca" de la lista
+        } catch (err) {
+            console.error("Error al desactivar el familiar:", err);
+            alert('No se pudo desactivar el familiar.');
+        } finally {
+            handleDeleteClose();
+        }
+    };
+
 
     return (
         <Box sx={{ flexGrow: 1, p: 3 }}>
@@ -59,7 +119,7 @@ const FamiliaresPage = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
                     Gestión de Familiares
                 </Typography>
-                <Button variant="contained" startIcon={<GroupAddIcon />} onClick={handleClickOpen}>
+                <Button variant="contained" startIcon={<GroupAddIcon />} onClick={handleOpenCreate}>
                     Registrar Nuevo Familiar
                 </Button>
             </Box>
@@ -83,8 +143,9 @@ const FamiliaresPage = () => {
                                 <TableCell>{familiar.telefono}</TableCell>
                                 <TableCell>{familiar.email}</TableCell>
                                 <TableCell align="right">
-                                    <IconButton color="primary"><EditIcon /></IconButton>
-                                    <IconButton color="error"><DeleteOutlineIcon /></IconButton>
+                                    {/* --- MODIFICADO: Se añaden los onClick a los botones --- */}
+                                    <IconButton color="primary" onClick={() => handleOpenEdit(familiar)}><EditIcon /></IconButton>
+                                    <IconButton color="error" onClick={() => handleDeleteOpen(familiar)}><DeleteOutlineIcon /></IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -92,27 +153,45 @@ const FamiliaresPage = () => {
                 </Table>
             </TableContainer>
 
+            {/* Modal para Registrar y Editar Familiar */}
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>Registrar Nuevo Familiar</DialogTitle>
+                {/* --- MODIFICADO: Título dinámico --- */}
+                <DialogTitle>{isEditing ? 'Editar Familiar' : 'Registrar Nuevo Familiar'}</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ mt: 1 }}>
                         <Grid item xs={12}>
-                            <TextField required name="nombre" label="Nombre Completo" fullWidth onChange={handleChange} />
+                            <TextField required name="nombre" label="Nombre Completo" fullWidth value={formData.nombre} onChange={handleChange} />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <TextField name="parentesco" label="Parentesco" fullWidth onChange={handleChange} />
+                            <TextField name="parentesco" label="Parentesco" fullWidth value={formData.parentesco} onChange={handleChange} />
                         </Grid>
-                         <Grid item xs={12} sm={6}>
-                            <TextField required name="telefono" label="Teléfono" fullWidth onChange={handleChange} />
+                        <Grid item xs={12} sm={6}>
+                            <TextField required name="telefono" label="Teléfono" fullWidth value={formData.telefono} onChange={handleChange} />
                         </Grid>
                         <Grid item xs={12}>
-                            <TextField name="email" label="Correo Electrónico" type="email" fullWidth onChange={handleChange} />
+                            <TextField name="email" label="Correo Electrónico" type="email" fullWidth value={formData.email} onChange={handleChange} />
                         </Grid>
                     </Grid>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancelar</Button>
                     <Button onClick={handleSubmit} variant="contained">Guardar</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* --- NUEVO: Diálogo de Confirmación para Eliminar --- */}
+            <Dialog open={deleteConfirmOpen} onClose={handleDeleteClose}>
+                <DialogTitle>Confirmar Desactivación</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        ¿Estás seguro de que deseas desactivar a <strong>{familiarToDelete?.nombre}</strong>? El familiar no se borrará permanentemente y podrá ser reactivado en el futuro.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDeleteClose}>Cancelar</Button>
+                    <Button onClick={handleDeleteConfirm} variant="contained" color="error">
+                        Desactivar
+                    </Button>
                 </DialogActions>
             </Dialog>
         </Box>
