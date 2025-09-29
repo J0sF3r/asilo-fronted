@@ -3,11 +3,12 @@ import { useParams, Link as RouterLink } from 'react-router-dom';
 import {
     Typography, Box, Paper, Grid, List, ListItem, ListItemText, IconButton, Divider, Button,
     Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, MenuItem,
-    Chip, Accordion, AccordionSummary, AccordionDetails, CircularProgress, TextField, StarIcon
+    Chip, Accordion, AccordionSummary, AccordionDetails, CircularProgress, TextField
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import StarIcon from '@mui/icons-material/Star';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import api from '../utils/api';
