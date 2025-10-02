@@ -4,26 +4,21 @@ import {
     TableContainer, TableHead, TableRow, Button, IconButton,
     Dialog, DialogTitle, DialogContent, DialogActions, Grid, TextField, Divider
 } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info'; // Importar el nuevo icono
+import InfoIcon from '@mui/icons-material/Info';
 import api from '../utils/api';
 
 const LaboratorioPage = () => {
     const [pendientes, setPendientes] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
-    const [detailsModalOpen, setDetailsModalOpen] = useState(false); // Nuevo estado para el modal de detalles
+    const [detailsModalOpen, setDetailsModalOpen] = useState(false);
     const [currentExamen, setCurrentExamen] = useState(null);
     const [resultadoData, setResultadoData] = useState({
-        resultado: '',
-        fecha_realizacion: ''
+        resultado: ''
     });
-     // FUNCIÓN PARA OBTENER LA FECHA LOCAL ---
-     const getLocalDateTime = () => {
-        const date = new Date();
-         date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-        return date.toISOString().slice(0, 16);
-    };
+
     const fetchPendientes = async () => {
         try {
+            // Asumiendo que esta ruta ya trae los pendientes de 'examen_visita'
             const res = await api.get('/laboratorio/pendientes');
             setPendientes(res.data);
         } catch (err) {
@@ -37,13 +32,11 @@ const LaboratorioPage = () => {
 
     const handleOpenModal = (examen) => {
         setCurrentExamen(examen);
-        setResultadoData({ resultado: '', fecha_realizacion: getLocalDateTime() });
+        setResultadoData({ resultado: '' });
         setModalOpen(true);
     };
-
     const handleCloseModal = () => setModalOpen(false);
-
-    // Nuevas funciones para el modal de detalles
+    
     const handleOpenDetailsModal = (examen) => {
         setCurrentExamen(examen);
         setDetailsModalOpen(true);
@@ -55,30 +48,29 @@ const LaboratorioPage = () => {
     };
 
     const handleSubmit = async () => {
-        if (!resultadoData.resultado || !resultadoData.fecha_realizacion) {
-            return alert('Por favor, complete todos los campos.');
+        if (!resultadoData.resultado) {
+            return alert('Por favor, complete el campo de resultado.');
         }
         try {
-            const body = {
-                id_visita: currentExamen.id_visita,
-                id_examen: currentExamen.id_examen,
-                resultado: resultadoData.resultado,
-                fecha_realizacion: resultadoData.fecha_realizacion
-            };
-            await api.put('/laboratorio/resultado', body);
+            // --- CORRECCIÓN CLAVE AQUÍ ---
+            // Llamamos a la ruta correcta usando los IDs de la llave compuesta
+            await api.put(`/examenes-visita/${currentExamen.id_visita}/${currentExamen.id_examen}`, {
+                resultado: resultadoData.resultado
+            });
+
             handleCloseModal();
             fetchPendientes();
-            alert('Resultado registrado exitosamente.');
+            alert('Resultado registrado y cobro generado exitosamente.');
         } catch (err) {
             console.error("Error al registrar el resultado:", err);
             alert('No se pudo registrar el resultado.');
         }
     };
-
+    
     const formatDate = (dateString) => new Date(dateString).toLocaleDateString('es-GT');
 
     return (
-        <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#f4f6f8', minHeight: '100vh' }}>
+        <Box sx={{ flexGrow: 1, p: 3 }}>
             <Paper sx={{ p: 3, maxWidth: 1200, margin: 'auto' }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', mb: 4 }}>
                     Portal de Laboratorio - Exámenes Pendientes
@@ -101,7 +93,6 @@ const LaboratorioPage = () => {
                                     <TableCell>{examen.nombre_paciente}</TableCell>
                                     <TableCell>{examen.nombre_examen}</TableCell>
                                     <TableCell align="right">
-                                        {/* BOTÓN DE DETALLES AÑADIDO */}
                                         <IconButton color="default" onClick={() => handleOpenDetailsModal(examen)} sx={{ mr: 1 }}>
                                             <InfoIcon />
                                         </IconButton>
@@ -120,21 +111,24 @@ const LaboratorioPage = () => {
                 </TableContainer>
             </Paper>
 
-            {/* Modal para registrar resultado (sin cambios) */}
+            {/* Modal para registrar resultado */}
             <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth="sm" fullWidth>
                 <DialogTitle>Registrar Resultado de Examen</DialogTitle>
                 <DialogContent>
                     <Box sx={{ pt: 2 }}>
                         <Typography variant="subtitle1"><strong>Paciente:</strong> {currentExamen?.nombre_paciente}</Typography>
                         <Typography variant="subtitle1" gutterBottom><strong>Examen:</strong> {currentExamen?.nombre_examen}</Typography>
-                        <Grid container spacing={2} sx={{ mt: 1 }}>
-                            <Grid item xs={12}>
-                                <TextField name="resultado" label="Resultado del Examen" fullWidth multiline rows={4} required value={resultadoData.resultado} onChange={handleChange} />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField name="fecha_realizacion" label="Fecha de Realización" type="datetime-local" fullWidth required value={resultadoData.fecha_realizacion} onChange={handleChange} InputLabelProps={{ shrink: true }} />
-                            </Grid>
-                        </Grid>
+                        <TextField 
+                            name="resultado" 
+                            label="Resultado del Examen" 
+                            fullWidth 
+                            multiline 
+                            rows={4} 
+                            required 
+                            value={resultadoData.resultado} 
+                            onChange={handleChange} 
+                            sx={{ mt: 2 }}
+                        />
                     </Box>
                 </DialogContent>
                 <DialogActions>
@@ -143,7 +137,7 @@ const LaboratorioPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* NUEVO MODAL PARA VER DETALLES DE LA VISITA */}
+            {/* Modal para ver detalles de la visita */}
             <Dialog open={detailsModalOpen} onClose={handleCloseDetailsModal} maxWidth="sm" fullWidth>
                 <DialogTitle>Detalles de la Visita Médica</DialogTitle>
                 <DialogContent>
