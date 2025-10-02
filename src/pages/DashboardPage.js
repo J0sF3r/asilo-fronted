@@ -39,7 +39,7 @@ const DashboardPage = () => {
             </Typography>
 
             {/* Este componente solo se muestra si el rol es Admin o Médico General */}
-            {(userRole === 'Administración' || userRole === 'Medico General') && <PendientesRevision />}
+            {(userRole === 'Medico Especialista') && <PendientesRevision />}
 
             <Grid container spacing={4}>
                 {dashboardItems.map((item) => (
