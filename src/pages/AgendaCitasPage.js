@@ -236,6 +236,7 @@ const AgendaCitasPage = () => {
                 <ToggleButtonGroup color="primary" value={filtroEstado} exclusive onChange={handleFiltroChange} aria-label="filtro de estado">
                     <ToggleButton value="programada">Programadas</ToggleButton>
                     <ToggleButton value="realizada">Pendientes de Resultados</ToggleButton>
+                     <ToggleButton value="resultados_listos">Para Revisión</ToggleButton> 
                     <ToggleButton value="completada">Completadas</ToggleButton>
                 </ToggleButtonGroup>
             </Box>

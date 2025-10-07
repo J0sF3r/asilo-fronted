@@ -132,7 +132,7 @@ const SolicitudesPage = () => {
             } else if ((userRole === 'Fundación' || userRole === 'Administración') && currentSolicitud.estado === 'aprobada') {
                 const dataToSend = { 
                     ...formData, 
-                    costo_final_con_descuento: formData.costo_final_con_descuento || formData.costo_consulta 
+                    costo_final_con_descuento: formData.costo_final_con_descuento || formData.costo_consulta || 0
                 };
                 await api.post(`/solicitudes/${currentSolicitud.id_solicitud}/programar`, dataToSend);
                 alert('¡Cita programada exitosamente!');
