@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
     Typography, Box, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Chip, IconButton, CircularProgress,
-    Dialog, DialogTitle, DialogContent, DialogActions, Grid, TextField, Button, 
+    Dialog, DialogTitle, DialogContent, DialogActions, Grid, TextField, Button,
     FormControl, InputLabel, Select, MenuItem, Divider, List, ListItem, ListItemText,
-    ToggleButtonGroup, ToggleButton
+    ToggleButtonGroup, ToggleButton, Autocomplete
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -41,7 +41,7 @@ const AgendaCitasPage = () => {
     const [userRole, setUserRole] = useState(null);
     const [solicitudData, setSolicitudData] = useState(null);
     const [isReadOnly, setIsReadOnly] = useState(false);
-    
+
     // Estados para Historial
     const [historialModalOpen, setHistorialModalOpen] = useState(false);
     const [historialData, setHistorialData] = useState(null);
@@ -145,7 +145,7 @@ const AgendaCitasPage = () => {
         try {
             await api.delete(`/visitas/${currentCita.id_visita}/examenes/${id_examen}`);
             setAssignedExamenes(assignedExamenes.filter(ex => ex.id_examen !== id_examen));
-        } catch(err) { console.error("Error al quitar examen:", err); }
+        } catch (err) { console.error("Error al quitar examen:", err); }
     };
 
     const handleMedicamentoChange = (e) => setNewMedicamentoData({ ...newMedicamentoData, [e.target.name]: e.target.value });
@@ -172,7 +172,7 @@ const AgendaCitasPage = () => {
         try {
             await api.put(`/visitas/${currentCita.id_visita}`, updateData);
             handleCloseModal();
-            
+
             // Forzar la recarga de datos con el filtro actual
             const decoded = jwt_decode(localStorage.getItem('token'));
             const role = decoded.user.nombre_rol;
@@ -182,7 +182,7 @@ const AgendaCitasPage = () => {
             } else if (role === 'Fundación' || role === 'Administración') {
                 refreshUrl = `/visitas?estado=${filtroEstado}`;
             }
-            if(refreshUrl) {
+            if (refreshUrl) {
                 const res = await api.get(refreshUrl);
                 setCitas(res.data);
             }
@@ -196,8 +196,8 @@ const AgendaCitasPage = () => {
     const getStatusChip = (status) => {
         let color = 'default';
         if (status === 'programada') color = 'primary';
-        if (status === 'realizada') color = 'warning'; 
-        if (status === 'completada') color = 'success'; 
+        if (status === 'realizada') color = 'warning';
+        if (status === 'completada') color = 'success';
         if (status === 'cancelada') color = 'error';
         return <Chip label={status} color={color} size="small" />;
     };
@@ -222,7 +222,7 @@ const AgendaCitasPage = () => {
             setLoadingHistorial(false);
         }
     };
-    
+
     const handleCloseHistorialModal = () => {
         setHistorialModalOpen(false);
         setHistorialData(null);
@@ -231,12 +231,12 @@ const AgendaCitasPage = () => {
     return (
         <Box sx={{ flexGrow: 1, p: 3 }}>
             <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', mb: 4 }}>Agenda de Citas</Typography>
-            
+
             <Box sx={{ mb: 2 }}>
                 <ToggleButtonGroup color="primary" value={filtroEstado} exclusive onChange={handleFiltroChange} aria-label="filtro de estado">
                     <ToggleButton value="programada">Programadas</ToggleButton>
                     <ToggleButton value="realizada">Pendientes de Resultados</ToggleButton>
-                     <ToggleButton value="resultados_listos">Para Revisión</ToggleButton> 
+                    <ToggleButton value="resultados_listos">Para Revisión</ToggleButton>
                     <ToggleButton value="completada">Completadas</ToggleButton>
                 </ToggleButtonGroup>
             </Box>
@@ -291,7 +291,7 @@ const AgendaCitasPage = () => {
                                     Ver Historial Completo
                                 </Button>
                             </Box>
-                            <TextField label="Motivo de la Visita (Referido por Médico General)" fullWidth multiline value={solicitudData.motivo || 'No especificado'} InputProps={{ readOnly: true }} variant="outlined"/>
+                            <TextField label="Motivo de la Visita (Referido por Médico General)" fullWidth multiline value={solicitudData.motivo || 'No especificado'} InputProps={{ readOnly: true }} variant="outlined" />
                         </Paper>
                     )}
                     <Grid container spacing={4} sx={{ mt: 0.1 }}>
@@ -310,13 +310,13 @@ const AgendaCitasPage = () => {
                                         </FormControl>
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField name="proxima_cita" label="Próxima Cita" type="datetime-local" fullWidth value={updateData.proxima_cita} onChange={handleChange} InputLabelProps={{ shrink: true }} disabled={isReadOnly}/>
+                                        <TextField name="proxima_cita" label="Próxima Cita" type="datetime-local" fullWidth value={updateData.proxima_cita} onChange={handleChange} InputLabelProps={{ shrink: true }} disabled={isReadOnly} />
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <TextField name="diagnostico" label="Diagnóstico Médico" fullWidth multiline rows={2} value={updateData.diagnostico} onChange={handleChange} disabled={isReadOnly}/>
+                                        <TextField name="diagnostico" label="Diagnóstico Médico" fullWidth multiline rows={2} value={updateData.diagnostico} onChange={handleChange} disabled={isReadOnly} />
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <TextField name="observaciones_medicas" label="Observaciones Médicas" fullWidth multiline rows={2} value={updateData.observaciones_medicas} onChange={handleChange} disabled={isReadOnly}/>
+                                        <TextField name="observaciones_medicas" label="Observaciones Médicas" fullWidth multiline rows={2} value={updateData.observaciones_medicas} onChange={handleChange} disabled={isReadOnly} />
                                     </Grid>
                                 </Grid>
                             </Paper>
@@ -324,7 +324,7 @@ const AgendaCitasPage = () => {
                                 <Typography variant="h6" gutterBottom>Gestión de Exámenes</Typography>
                                 <List dense sx={{ mb: 2 }}>
                                     {assignedExamenes.map(ex => (
-                                        <ListItem key={ex.id_examen} secondaryAction={ <IconButton edge="end" size="small" color="error" onClick={() => handleRemoveExamen(ex.id_examen)} disabled={isReadOnly}> <DeleteIcon fontSize="small"/> </IconButton> }><ListItemText primary={ex.nombre_examen} secondary={ex.resultado ? `Resultado: ${ex.resultado}` : 'Pendiente'} /></ListItem>
+                                        <ListItem key={ex.id_examen} secondaryAction={<IconButton edge="end" size="small" color="error" onClick={() => handleRemoveExamen(ex.id_examen)} disabled={isReadOnly}> <DeleteIcon fontSize="small" /> </IconButton>}><ListItemText primary={ex.nombre_examen} secondary={ex.resultado ? `Resultado: ${ex.resultado}` : 'Pendiente'} /></ListItem>
                                     ))}
                                 </List>
                                 <FormControl fullWidth sx={{ mb: 2 }} disabled={isReadOnly}><InputLabel>Añadir Examen</InputLabel>
@@ -340,23 +340,34 @@ const AgendaCitasPage = () => {
                                 <Typography variant="h6" gutterBottom>Prescripción de Medicamentos</Typography>
                                 <List dense sx={{ mb: 2, maxHeight: 200, overflow: 'auto' }}>
                                     {assignedMedicamentos.map(med => (
-                                        <ListItem key={med.id_medicamento} secondaryAction={ <IconButton edge="end" size="small" color="error" onClick={() => handleRemoveMedicamento(med.id_medicamento)} disabled={isReadOnly}> <DeleteIcon fontSize="small" /> </IconButton> }><ListItemText primary={med.nombre} secondary={`Cant: ${med.cantidad} - Indicaciones: ${med.tiempo_aplicacion}`} /></ListItem>
+                                        <ListItem key={med.id_medicamento} secondaryAction={<IconButton edge="end" size="small" color="error" onClick={() => handleRemoveMedicamento(med.id_medicamento)} disabled={isReadOnly}> <DeleteIcon fontSize="small" /> </IconButton>}><ListItemText primary={med.nombre} secondary={`Cant: ${med.cantidad} - Indicaciones: ${med.tiempo_aplicacion}`} /></ListItem>
                                     ))}
                                 </List>
                                 <Divider sx={{ my: 2 }}><Chip label="Añadir a la Receta" /></Divider>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12}>
-                                        <FormControl fullWidth disabled={isReadOnly}><InputLabel>Medicamento</InputLabel>
-                                            <Select name="id_medicamento" label="Medicamento" value={newMedicamentoData.id_medicamento} onChange={handleMedicamentoChange}>
-                                                {allMedicamentos.map(m => <MenuItem key={m.id_medicamento} value={m.id_medicamento}>{m.nombre}</MenuItem>)}
-                                            </Select>
-                                        </FormControl>
+                                        <Autocomplete
+                                            options={allMedicamentos}
+                                            getOptionLabel={(option) => option.nombre || ''}
+                                            value={allMedicamentos.find(m => m.id_medicamento === newMedicamentoData.id_medicamento) || null}
+                                            onChange={(event, newValue) => {
+                                                handleMedicamentoChange({
+                                                    target: {
+                                                        name: 'id_medicamento',
+                                                        value: newValue ? newValue.id_medicamento : ''
+                                                    }
+                                                });
+                                            }}
+                                            renderInput={(params) => <TextField {...params} label="Buscar Medicamento" />}
+                                            disabled={isReadOnly}
+                                        />
+
                                     </Grid>
                                     <Grid item xs={12} sm={4}>
-                                        <TextField name="cantidad" label="Cantidad" type="number" fullWidth value={newMedicamentoData.cantidad} onChange={handleMedicamentoChange} disabled={isReadOnly}/>
+                                        <TextField name="cantidad" label="Cantidad" type="number" fullWidth value={newMedicamentoData.cantidad} onChange={handleMedicamentoChange} disabled={isReadOnly} />
                                     </Grid>
                                     <Grid item xs={12} sm={8}>
-                                        <TextField name="tiempo_aplicacion" label="Indicaciones (ej. 1 cada 8h)" fullWidth value={newMedicamentoData.tiempo_aplicacion} onChange={handleMedicamentoChange} disabled={isReadOnly}/>
+                                        <TextField name="tiempo_aplicacion" label="Indicaciones (ej. 1 cada 8h)" fullWidth value={newMedicamentoData.tiempo_aplicacion} onChange={handleMedicamentoChange} disabled={isReadOnly} />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Button variant="contained" startIcon={<AddCircleIcon />} onClick={handleAddMedicamento} fullWidth disabled={!newMedicamentoData.id_medicamento || isReadOnly}>Añadir a la Receta</Button>
@@ -372,7 +383,7 @@ const AgendaCitasPage = () => {
                 </DialogActions>
             </Dialog>
 
-            <HistorialPacienteModal 
+            <HistorialPacienteModal
                 open={historialModalOpen}
                 onClose={handleCloseHistorialModal}
                 historial={historialData}
