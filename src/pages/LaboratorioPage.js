@@ -141,7 +141,21 @@ const LaboratorioPage = () => {
 
             {/* Modal para ver detalles de la visita */}
             <Dialog open={detailsModalOpen} onClose={handleCloseDetailsModal} maxWidth="sm" fullWidth>
-                {/* ... (código del modal de detalles sin cambios) ... */}
+               <DialogTitle>Detalles de la Visita Médica</DialogTitle>
+                <DialogContent>
+                    <Box sx={{ pt: 1 }}>
+                        <Typography variant="body1" gutterBottom><strong>Paciente:</strong> {currentExamen?.nombre_paciente}</Typography>
+                        <Typography variant="body1" gutterBottom><strong>Examen Solicitado:</strong> {currentExamen?.nombre_examen}</Typography>
+                        <Typography variant="body1" gutterBottom><strong>Médico Solicitante:</strong> {currentExamen?.medico_solicitante || 'N/A'}</Typography>
+                        <Divider sx={{ my: 2 }} />
+                        <Typography variant="subtitle1" gutterBottom><strong>Contexto Clínico</strong></Typography>
+                        <Typography variant="body2" gutterBottom><strong>Diagnóstico Preliminar:</strong> {currentExamen?.diagnostico_preliminar || 'No especificado'}</Typography>
+                        <Typography variant="body2" gutterBottom><strong>Observaciones del Médico:</strong> {currentExamen?.observaciones_medicas || 'Sin observaciones'}</Typography>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDetailsModal}>Cerrar</Button>
+                </DialogActions>
             </Dialog>
         </Box>
     );
