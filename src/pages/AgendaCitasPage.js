@@ -358,6 +358,7 @@ const AgendaCitasPage = () => {
                                                     }
                                                 });
                                             }}
+                                             PopperComponent={(props) => <Popper {...props} style={{ zIndex: 1400 }} />}
                                             renderInput={(params) => <TextField {...params} label="Buscar Medicamento" />}
                                             disabled={isReadOnly}
                                         />
