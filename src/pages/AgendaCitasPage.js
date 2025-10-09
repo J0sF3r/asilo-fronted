@@ -365,7 +365,7 @@ const AgendaCitasPage = () => {
 
                                     </Grid>
                                     <Grid item xs={12} sm={4}>
-                                        <TextField name="cantidad" label="Cantidad" type="number" fullWidth value={newMedicamentoData.cantidad} onChange={handleMedicamentoChange} disabled={isReadOnly} />
+                                        <TextField name="cantidad" label="Cantidad Unitaria" type="number" fullWidth value={newMedicamentoData.cantidad} onChange={handleMedicamentoChange} disabled={isReadOnly} />
                                     </Grid>
                                     <Grid item xs={12} sm={8}>
                                         <TextField name="tiempo_aplicacion" label="Indicaciones (ej. 1 cada 8h)" fullWidth value={newMedicamentoData.tiempo_aplicacion} onChange={handleMedicamentoChange} disabled={isReadOnly} />
