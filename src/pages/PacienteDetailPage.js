@@ -287,7 +287,7 @@ const PacienteDetailPage = () => {
                                         <>
                                             <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>Medicamentos Recetados en esta Visita:</Typography>
                                             <List dense disablePadding sx={{ pl: 2 }}>
-                                                {solicitud.visita.medicamentos.map(med => (
+                                                {solicitud.medicamento_visita.medicamento.map(med => (
                                                     <ListItemText
                                                         key={med.nombre}
                                                         primary={`• ${med.nombre}`}
