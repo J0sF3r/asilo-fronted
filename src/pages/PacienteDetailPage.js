@@ -295,13 +295,13 @@ const PacienteDetailPage = () => {
                                             </ul>
                                         </>
                                     )}
-                                    {visita.medicamentos && visita.medicamentos.length > 0 && (
+                                    {solicitud.visita.medicamentos && solicitud.visita.medicamentos.length > 0 && (
                                         <>
                                             <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>
                                                 Medicamentos Recetados en esta Visita:
                                             </Typography>
                                             <List dense disablePadding sx={{ pl: 2 }}>
-                                                {visita.medicamentos.map(med => (
+                                                {solicitud.visita.medicamentos.map(med => (
                                                     <ListItemText
                                                         key={med.nombre}
                                                         primary={`• ${med.nombre}`}
