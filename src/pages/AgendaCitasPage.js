@@ -313,10 +313,19 @@ const AgendaCitasPage = () => {
                                         <TextField name="proxima_cita" label="Próxima Cita" type="datetime-local" fullWidth value={updateData.proxima_cita} onChange={handleChange} InputLabelProps={{ shrink: true }} disabled={isReadOnly} />
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <TextField name="diagnostico" label="Diagnóstico Médico" fullWidth multiline rows={2} value={updateData.diagnostico} onChange={handleChange} disabled={isReadOnly} />
+                                        <TextField name="diagnostico" label="Diagnóstico Médico" fullWidth multiline rows={3} value={updateData.diagnostico} onChange={handleChange} disabled={isReadOnly} />
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <TextField name="observaciones_medicas" label="Observaciones Médicas" fullWidth multiline rows={2} value={updateData.observaciones_medicas} onChange={handleChange} disabled={isReadOnly} />
+                                        <TextField
+                                            name="observaciones_medicas"
+                                            label="Observaciones y Plan de Tratamiento"
+                                            fullWidth
+                                            multiline
+                                            rows={4} 
+                                            value={updateData.observaciones_medicas}
+                                            onChange={handleChange}
+                                            disabled={isReadOnly}
+                                        />
                                     </Grid>
                                 </Grid>
                             </Paper>
