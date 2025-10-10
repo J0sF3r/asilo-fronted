@@ -283,7 +283,7 @@ const PacienteDetailPage = () => {
                                     <Typography variant="body2"><strong>Diagnóstico:</strong> {solicitud.visita.diagnostico || 'Pendiente'}</Typography>
                                     <Typography variant="body2"><strong>Observaciones y Plan:</strong> {solicitud.visita.observaciones_medicas || 'Sin observaciones'}</Typography>
                                    
-                                    {visita.medicamentos && visita.medicamentos.length > 0 && (
+                                    {solicitud.medicamento_visita.medicamentos && solicitud.medicamento_visita.medicamentos.length > 0 && (
                                         <>
                                             <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>Medicamentos Recetados en esta Visita:</Typography>
                                             <List dense disablePadding sx={{ pl: 2 }}>
