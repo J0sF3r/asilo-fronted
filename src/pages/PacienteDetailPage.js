@@ -281,8 +281,22 @@ const PacienteDetailPage = () => {
                                     <Typography variant="body2"><strong>Fecha de Visita:</strong> {formatDate(solicitud.visita.fecha_visita)}</Typography>
                                     <Typography variant="body2"><strong>Lugar:</strong> {solicitud.visita.lugar}</Typography>
                                     <Typography variant="body2"><strong>Diagnóstico:</strong> {solicitud.visita.diagnostico || 'Pendiente'}</Typography>
-                                     <Typography variant="body2"><strong>Observaciones y Plan:</strong> {solicitud.visita.observaciones_medicas || 'Sin observaciones'}</Typography>
-
+                                    <Typography variant="body2"><strong>Observaciones y Plan:</strong> {solicitud.visita.observaciones_medicas || 'Sin observaciones'}</Typography>
+                                   
+                                    {visita.medicamentos && visita.medicamentos.length > 0 && (
+                                        <>
+                                            <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>Medicamentos Recetados en esta Visita:</Typography>
+                                            <List dense disablePadding sx={{ pl: 2 }}>
+                                                {solicitud.visita.medicamentos.map(med => (
+                                                    <ListItemText
+                                                        key={med.nombre}
+                                                        primary={`• ${med.nombre}`}
+                                                        secondary={`(${med.cantidad} - ${med.indicaciones})`}
+                                                    />
+                                                ))}
+                                            </List>
+                                        </>
+                                    )}
                                     {solicitud.visita.examenes && solicitud.visita.examenes.length > 0 && (
                                         <>
                                             <Typography variant="body2" sx={{ mt: 1 }}><strong>Exámenes Solicitados:</strong></Typography>
@@ -306,7 +320,7 @@ const PacienteDetailPage = () => {
                 <Typography>No hay historial de solicitudes para este paciente.</Typography>
             )}
 
-                          <Box sx={{ mt: 4 }}>
+            <Box sx={{ mt: 4 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
                         Familiares Asignados
@@ -329,12 +343,12 @@ const PacienteDetailPage = () => {
                                                     {familiar.nombre}
                                                     {/* --- CORRECCIÓN AQUÍ: Muestra la etiqueta si es el principal --- */}
                                                     {familiar.es_contacto_principal && (
-                                                        <Chip 
-                                                            icon={<StarIcon />} 
-                                                            label="Contacto Principal" 
-                                                            size="small" 
-                                                            color="primary" 
-                                                            sx={{ ml: 2 }} 
+                                                        <Chip
+                                                            icon={<StarIcon />}
+                                                            label="Contacto Principal"
+                                                            size="small"
+                                                            color="primary"
+                                                            sx={{ ml: 2 }}
                                                         />
                                                     )}
                                                 </Box>
