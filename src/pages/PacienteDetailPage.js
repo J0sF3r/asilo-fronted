@@ -295,15 +295,17 @@ const PacienteDetailPage = () => {
                                             </ul>
                                         </>
                                     )}
-                                    {solicitud.visita.medicamentos && solicitud.visita.medicamentos.length > 0 && (
+                                    {visita.medicamentos && visita.medicamentos.length > 0 && (
                                         <>
-                                            <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>Medicamentos Recetados en esta Visita:</Typography>
+                                            <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>
+                                                Medicamentos Recetados en esta Visita:
+                                            </Typography>
                                             <List dense disablePadding sx={{ pl: 2 }}>
-                                                {solicitud.visita.medicamentos.map(med => (
+                                                {visita.medicamentos.map(med => (
                                                     <ListItemText
                                                         key={med.nombre}
                                                         primary={`• ${med.nombre}`}
-                                                        secondary={`(${med.cantidad} - ${med.indicaciones})`}
+                                                        secondary={`(${med.cantidad} - ${med.tiempo_aplicacion})`}
                                                     />
                                                 ))}
                                             </List>
