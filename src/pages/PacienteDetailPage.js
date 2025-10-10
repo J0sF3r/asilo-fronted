@@ -281,7 +281,7 @@ const PacienteDetailPage = () => {
                                     <Typography variant="body2"><strong>Fecha de Visita:</strong> {formatDate(solicitud.visita.fecha_visita)}</Typography>
                                     <Typography variant="body2"><strong>Lugar:</strong> {solicitud.visita.lugar}</Typography>
                                     <Typography variant="body2"><strong>Diagnóstico:</strong> {solicitud.visita.diagnostico || 'Pendiente'}</Typography>
-                                     <Typography><strong>Observaciones y Plan:</strong> {visita.observaciones_medicas || 'Sin observaciones'}</Typography>
+                                     <Typography variant="body2"><strong>Observaciones y Plan:</strong> {visita.observaciones_medicas || 'Sin observaciones'}</Typography>
 
                                     {solicitud.visita.examenes && solicitud.visita.examenes.length > 0 && (
                                         <>
