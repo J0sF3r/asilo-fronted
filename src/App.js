@@ -23,6 +23,7 @@ import FarmaciaPage from './pages/FarmaciaPage';
 import TransaccionesPage from './pages/TransaccionesPage';
 import EstadoCuentaPage from './pages/EstadoCuentaPage';
 import CuotasPage from './pages/CuotasPage';
+import DonantesPage from './pages/DonantesPage';
 
 import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -90,9 +91,11 @@ function App() {
         <Route path="/familiares/:id/estado-de-cuenta" element={
           <ProtectedRoute> <MainLayout> <EstadoCuentaPage /> </MainLayout> </ProtectedRoute>
         } />
-
         <Route path="/cuotas" element={
           <ProtectedRoute> <MainLayout> <CuotasPage /> </MainLayout> </ProtectedRoute>
+        } />
+        <Route path="/donantes" element={
+          <ProtectedRoute> <MainLayout> <DonantesPage /> </MainLayout> </ProtectedRoute>
         } />
 
       </Routes>
