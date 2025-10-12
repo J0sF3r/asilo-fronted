@@ -130,7 +130,7 @@ const SolicitudesPage = () => {
                 await api.put(`/solicitudes/${currentSolicitud.id_solicitud}/aprobar`, formData);
                 alert('¡Solicitud aprobada exitosamente!');
             } else if ((userRole === 'Fundación' || userRole === 'Administración') && currentSolicitud.estado === 'aprobada') {
-                await api.post(`/solicitudes/${currentSolicitud.id_solicitud}/programar`, dataToSend);
+                 await api.post(`/solicitudes/${currentSolicitud.id_solicitud}/programar`, formData);
                 alert('¡Cita programada exitosamente!');
             }
             handleCloseModal();
