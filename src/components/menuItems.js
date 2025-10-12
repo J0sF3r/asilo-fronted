@@ -89,7 +89,7 @@ const allMenuItems = [
     text: 'Caja y Transacciones',
     path: '/transacciones',
     icon: <PointOfSaleIcon />, 
-    allowedRoles: ['Administración']
+    allowedRoles: ['Administración, Fundación']
 },
 
 
