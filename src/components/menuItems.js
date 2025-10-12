@@ -10,6 +10,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import WcIcon from '@mui/icons-material/Wc';
 import EscalatorWarningIcon from '@mui/icons-material/EscalatorWarning';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 
 const allMenuItems = [
     {
@@ -84,6 +85,14 @@ const allMenuItems = [
         icon: <AdminPanelSettingsIcon />,
         allowedRoles: ['Administración']
     },
+    {
+    text: 'Caja y Transacciones',
+    path: '/transacciones',
+    icon: <PointOfSaleIcon />, 
+    allowedRoles: ['Administración']
+},
+
+
 ];
 
 export default allMenuItems;

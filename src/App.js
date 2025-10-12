@@ -20,6 +20,7 @@ import ExamenesPage from './pages/ExamenesPage';
 import LaboratorioPage  from './pages/LaboratorioPage';
 import MedicamentosPage from './pages/MedicamentosPage';
 import FarmaciaPage from './pages/FarmaciaPage';
+import TransaccionesPage from './pages/TransaccionesPage';
 
 import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -81,7 +82,9 @@ function App() {
         <Route path="/farmacia" element={
           <ProtectedRoute> <MainLayout> <FarmaciaPage /> </MainLayout> </ProtectedRoute>
         } />
-        {/* Aquí añadiremos futuras rutas como /internos, /citas, etc. */}
+        <Route path="/transacciones" element={
+          <ProtectedRoute> <MainLayout> <TransaccionesPage /> </MainLayout> </ProtectedRoute>
+        } />
 
       </Routes>
     </ThemeProvider>
