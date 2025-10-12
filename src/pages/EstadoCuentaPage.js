@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
-import { Typography, Box, Paper, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, 
-    DialogTitle, DialogContent, DialogActions, TextField, Grid
- } from '@mui/material';
+import { 
+    Typography, Box, Paper, CircularProgress, Table, TableBody, TableCell, 
+    TableContainer, TableHead, TableRow, Button, Dialog, DialogTitle, 
+    DialogContent, DialogActions, TextField, Grid, Chip
+} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import api from '../utils/api';
 
 const EstadoCuentaPage = () => {
-    const { id } = useParams(); // Obtiene el ID del familiar desde la URL
+    const { id } = useParams();
     const [estadoCuenta, setEstadoCuenta] = useState(null);
     const [loading, setLoading] = useState(true);
-
     const [modalPagoOpen, setModalPagoOpen] = useState(false);
     const [pagoData, setPagoData] = useState({ monto: '', descripcion: '' });
-    
 
     const fetchData = async () => {
         setLoading(true);
@@ -27,27 +27,24 @@ const EstadoCuentaPage = () => {
         }
     };
 
-
     useEffect(() => {
-        const fetchEstadoCuenta = async () => {
-            setLoading(true);
-            try {
-                const res = await api.get(`/familiares/${id}/estado-de-cuenta`);
-                setEstadoCuenta(res.data);
-            } catch (err) {
-                console.error("Error al obtener el estado de cuenta:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchEstadoCuenta();
+        fetchData();
     }, [id]);
 
     const handleOpenPagoModal = () => setModalPagoOpen(true);
-    const handleClosePagoModal = () => setModalPagoOpen(false);
+    const handleClosePagoModal = () => {
+        setModalPagoOpen(false);
+        setPagoData({ monto: '', descripcion: '' });
+    };
+    
     const handlePagoChange = (e) => setPagoData({ ...pagoData, [e.target.name]: e.target.value });
 
     const handlePagoSubmit = async () => {
+        if (!pagoData.monto || parseFloat(pagoData.monto) <= 0) {
+            alert('Por favor ingresa un monto válido.');
+            return;
+        }
+        
         try {
             await api.post('/transacciones/pago', {
                 id_familiar: id,
@@ -56,13 +53,12 @@ const EstadoCuentaPage = () => {
             });
             alert('¡Pago registrado exitosamente!');
             handleClosePagoModal();
-            fetchData(); // Recargar el estado de cuenta
+            fetchData();
         } catch (err) {
             console.error("Error al registrar el pago:", err);
             alert('No se pudo registrar el pago.');
         }
     };
-    
 
     const formatCurrency = (amount) => `Q${parseFloat(amount).toFixed(2)}`;
 
@@ -79,20 +75,44 @@ const EstadoCuentaPage = () => {
             <Button component={RouterLink} to="/familiares" startIcon={<ArrowBackIcon />} sx={{ mb: 2 }}>
                 Volver a Familiares
             </Button>
+
+            {/* Resumen del Estado de Cuenta */}
             <Paper sx={{ p: 3, mb: 4 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <Typography variant="h4" gutterBottom>Estado de Cuenta</Typography>
-                        <Typography variant="h5" color={estadoCuenta.balance < 0 ? 'error' : 'success'}>
-                            Balance Actual: <strong>{formatCurrency(estadoCuenta.balance)}</strong>
-                        </Typography>
-                    </div>
-                    <Button variant="contained" color="success" onClick={handleOpenPagoModal}>
-                        Registrar Pago
-                    </Button>
-                </Box>
+                <Typography variant="h4" gutterBottom>Estado de Cuenta</Typography>
+                
+                <Grid container spacing={3} sx={{ mt: 1, mb: 3 }}>
+                    <Grid item xs={12} sm={4}>
+                        <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1 }}>
+                            <Typography variant="body2" color="text.secondary">Total Cargos</Typography>
+                            <Typography variant="h5" color="error.main">
+                                {formatCurrency(estadoCuenta.totalCargos)}
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <Box sx={{ p: 2, bgcolor: '#e8f5e9', borderRadius: 1 }}>
+                            <Typography variant="body2" color="text.secondary">Total Descuentos</Typography>
+                            <Typography variant="h5" color="success.main">
+                                -{formatCurrency(estadoCuenta.totalDescuentos)}
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <Box sx={{ p: 2, bgcolor: '#e3f2fd', borderRadius: 1 }}>
+                            <Typography variant="body2" color="text.secondary">Balance Pendiente</Typography>
+                            <Typography variant="h5" color={parseFloat(estadoCuenta.balance) > 0 ? 'error' : 'success'}>
+                                {formatCurrency(estadoCuenta.balance)}
+                            </Typography>
+                        </Box>
+                    </Grid>
+                </Grid>
+                
+                <Button variant="contained" color="success" onClick={handleOpenPagoModal}>
+                    Registrar Pago
+                </Button>
             </Paper>
 
+            {/* Historial de Transacciones */}
             <Typography variant="h5" sx={{ mb: 2 }}>Historial de Transacciones</Typography>
             <TableContainer component={Paper}>
                 <Table>
@@ -101,24 +121,50 @@ const EstadoCuentaPage = () => {
                             <TableCell>Fecha</TableCell>
                             <TableCell>Tipo</TableCell>
                             <TableCell>Descripción</TableCell>
-                            <TableCell align="right">Monto</TableCell>
+                            <TableCell align="right">Monto Original</TableCell>
+                            <TableCell align="right">Descuento</TableCell>
+                            <TableCell align="right">Monto Final</TableCell>
+                            <TableCell align="center">Estado</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {estadoCuenta.transacciones.map((t, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{new Date(t.fecha).toLocaleDateString('es-GT')}</TableCell>
-                                <TableCell>{t.tipo}</TableCell>
-                                <TableCell>{t.descripcion}</TableCell>
-                                <TableCell align="right" sx={{ color: t.monto < 0 ? 'error.main' : 'success.main' }}>
-                                    {formatCurrency(t.monto)}
+                        {estadoCuenta.transacciones.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={7} align="center">
+                                    No hay transacciones registradas
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ) : (
+                            estadoCuenta.transacciones.map((t) => (
+                                <TableRow key={t.id_movimiento}>
+                                    <TableCell>{new Date(t.fecha).toLocaleDateString('es-GT')}</TableCell>
+                                    <TableCell>{t.tipo}</TableCell>
+                                    <TableCell>{t.descripcion}</TableCell>
+                                    <TableCell align="right">
+                                        {t.monto_original ? formatCurrency(t.monto_original) : '-'}
+                                    </TableCell>
+                                    <TableCell align="right" sx={{ color: 'success.main' }}>
+                                        {t.descuento_aplicado ? `${t.descuento_aplicado}%` : '-'}
+                                    </TableCell>
+                                    <TableCell align="right" sx={{ fontWeight: 'bold', color: t.tipo.startsWith('Cargo') ? 'error.main' : 'success.main' }}>
+                                        {formatCurrency(t.monto)}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        <Chip 
+                                            label={t.estado_pago || 'Pendiente'} 
+                                            color={t.estado_pago === 'Pagado' ? 'success' : 'warning'}
+                                            size="small"
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
-             <Dialog open={modalPagoOpen} onClose={handleClosePagoModal}>
+
+            {/* Modal de Pago */}
+            <Dialog open={modalPagoOpen} onClose={handleClosePagoModal}>
                 <DialogTitle>Registrar Pago</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ pt: 1 }}>
@@ -132,6 +178,7 @@ const EstadoCuentaPage = () => {
                                 required
                                 value={pagoData.monto}
                                 onChange={handlePagoChange}
+                                inputProps={{ min: 0, step: 0.01 }}
                             />
                         </Grid>
                         <Grid item xs={12}>
