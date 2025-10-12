@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {
     Typography, Box, Button, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle,
-    DialogContent, DialogActions, TextField, Grid, DialogContentText
+    DialogContent, DialogActions, TextField, Grid, DialogContentText,  AccountBalanceWalletIcon
 } from '@mui/material';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import api from '../utils/api';
 
 const FamiliaresPage = () => {
@@ -144,6 +145,19 @@ const FamiliaresPage = () => {
                                 <TableCell>{familiar.email}</TableCell>
                                 <TableCell align="right">
                                     {/* --- MODIFICADO: Se añaden los onClick a los botones --- */}
+                                    <IconButton color="primary" onClick={() => handleOpenEdit(familiar)}><EditIcon /></IconButton>
+                                    <IconButton color="error" onClick={() => handleDeleteOpen(familiar)}><DeleteOutlineIcon /></IconButton>
+                                </TableCell>
+
+                                <TableCell align="right">
+                                    <IconButton
+                                        color="secondary"
+                                        component={RouterLink}
+                                        to={`/familiares/${familiar.id_familiar}/estado-de-cuenta`}
+                                        title="Ver Estado de Cuenta"
+                                    >
+                                        <AccountBalanceWalletIcon />
+                                    </IconButton>
                                     <IconButton color="primary" onClick={() => handleOpenEdit(familiar)}><EditIcon /></IconButton>
                                     <IconButton color="error" onClick={() => handleDeleteOpen(familiar)}><DeleteOutlineIcon /></IconButton>
                                 </TableCell>

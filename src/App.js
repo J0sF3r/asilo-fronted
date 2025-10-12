@@ -21,6 +21,7 @@ import LaboratorioPage  from './pages/LaboratorioPage';
 import MedicamentosPage from './pages/MedicamentosPage';
 import FarmaciaPage from './pages/FarmaciaPage';
 import TransaccionesPage from './pages/TransaccionesPage';
+import EstadoCuentaPage from './pages/EstadoCuentaPage';
 
 import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -84,6 +85,9 @@ function App() {
         } />
         <Route path="/transacciones" element={
           <ProtectedRoute> <MainLayout> <TransaccionesPage /> </MainLayout> </ProtectedRoute>
+        } />
+        <Route path="/familiares/:id/estado-de-cuenta" element={
+          <ProtectedRoute> <MainLayout> <EstadoCuentaPage /> </MainLayout> </ProtectedRoute>
         } />
 
       </Routes>
