@@ -14,7 +14,7 @@ const FarmaciaPage = () => {
 
     // Modal para confirmar entrega de visita puntual
     const [confirmVisitaModal, setConfirmVisitaModal] = useState({ open: false, data: null });
-    
+
     // Modal para registrar cobro de tratamiento fijo
     const [cobroFijoModal, setCobroFijoModal] = useState({ open: false, data: null });
     const [cobroFijoFormData, setCobroFijoFormData] = useState({ cantidad_dispensada: '', costo_total: '' });
@@ -39,7 +39,7 @@ const FarmaciaPage = () => {
     useEffect(() => {
         fetchData();
     }, []);
-    
+
     // --- Lógica para Medicamentos de Visita ---
     const handleOpenConfirmVisita = (medicamento) => setConfirmVisitaModal({ open: true, data: medicamento });
     const handleCloseConfirmVisita = () => setConfirmVisitaModal({ open: false, data: null });
@@ -60,26 +60,26 @@ const FarmaciaPage = () => {
     const handleOpenCobroFijo = (tratamiento) => setCobroFijoModal({ open: true, data: tratamiento });
     const handleCloseCobroFijo = () => {
         setCobroFijoModal({ open: false, data: null });
-        setCobroFijoFormData({ cantidad_dispensada: '', costo_total: '' });
+        setCobroFijoFormData({ cantidad_dispensada: '', costo_total: tratamiento.costo_unitario || '' });
     };
     const handleCobroFijoChange = (e) => setCobroFijoFormData({ ...cobroFijoFormData, [e.target.name]: e.target.value });
     const handleCobroFijoSubmit = async () => {
-    if (!cobroFijoFormData.costo_total) return alert('El costo total es requerido.');
-    try {
-        const dataToSend = {
-            id_tratamiento_fijo: cobroFijoModal.data.id_tratamiento,
-            cantidad_dispensada: cobroFijoFormData.cantidad_dispensada,
-            costo_total: cobroFijoFormData.costo_total
-        };
-        await api.post('/cobros-medicamentos', dataToSend); // ← Cambio aquí
-        handleCloseCobroFijo();
-        fetchData();
-        alert('Cobro de tratamiento fijo registrado exitosamente.');
-    } catch (err) {
-        console.error("Error al registrar cobro:", err);
-        alert('No se pudo registrar el cobro.');
-    }
-};
+        if (!cobroFijoFormData.costo_total) return alert('El costo total es requerido.');
+        try {
+            const dataToSend = {
+                id_tratamiento_fijo: cobroFijoModal.data.id_tratamiento,
+                cantidad_dispensada: cobroFijoFormData.cantidad_dispensada,
+                costo_total: cobroFijoFormData.costo_total
+            };
+            await api.post('/cobros-medicamentos', dataToSend); // ← Cambio aquí
+            handleCloseCobroFijo();
+            fetchData();
+            alert('Cobro de tratamiento fijo registrado exitosamente.');
+        } catch (err) {
+            console.error("Error al registrar cobro:", err);
+            alert('No se pudo registrar el cobro.');
+        }
+    };
 
     if (loading) { return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>; }
 
@@ -170,13 +170,47 @@ const FarmaciaPage = () => {
                 <DialogTitle>Registrar Dispensación y Cobro</DialogTitle>
                 <DialogContent>
                     <Typography variant="h6">{cobroFijoModal.data?.nombre_paciente}</Typography>
-                    <Typography variant="body1" gutterBottom>{cobroFijoModal.data?.nombre_medicamento}</Typography>
-                    <Grid container spacing={2} sx={{ mt: 1 }}>
+                    <Typography variant="body1" color="text.secondary" gutterBottom>
+                        {cobroFijoModal.data?.nombre_medicamento}
+                    </Typography>
+
+                    {/* Información adicional */}
+                    <Box sx={{ bgcolor: 'grey.100', p: 2, borderRadius: 1, mb: 2 }}>
+                        <Typography variant="body2"><strong>Dosis:</strong> {cobroFijoModal.data?.dosis}</Typography>
+                        <Typography variant="body2"><strong>Frecuencia:</strong> {cobroFijoModal.data?.frecuencia}</Typography>
+                        <Typography variant="body2"><strong>Última entrega:</strong> {cobroFijoModal.data?.ultima_fecha
+                            ? new Date(cobroFijoModal.data.ultima_fecha).toLocaleDateString('es-GT')
+                            : 'Primera dispensación'}</Typography>
+                        {cobroFijoModal.data?.costo_unitario && (
+                            <Typography variant="body2" color="primary">
+                                <strong>Precio unitario:</strong> Q{parseFloat(cobroFijoModal.data.costo_unitario).toFixed(2)}
+                            </Typography>
+                        )}
+                    </Box>
+
+                    <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <TextField name="cantidad_dispensada" label="Cantidad Dispensada (ej: 1 caja)" value={cobroFijoFormData.cantidad_dispensada} onChange={handleCobroFijoChange} fullWidth />
+                            <TextField
+                                name="cantidad_dispensada"
+                                label="Cantidad Dispensada"
+                                value={cobroFijoFormData.cantidad_dispensada}
+                                onChange={handleCobroFijoChange}
+                                fullWidth
+                                placeholder="Ej: 1 caja de 30 tabletas"
+                            />
                         </Grid>
                         <Grid item xs={12}>
-                            <TextField name="costo_total" label="Costo Total (Q)" type="number" value={cobroFijoFormData.costo_total} onChange={handleCobroFijoChange} fullWidth required />
+                            <TextField
+                                name="costo_total"
+                                label="Costo Total (Q)"
+                                type="number"
+                                value={cobroFijoFormData.costo_total}
+                                onChange={handleCobroFijoChange}
+                                fullWidth
+                                required
+                                inputProps={{ min: 0, step: 0.01 }}
+                                helperText="Este campo está pre-llenado, puedes modificarlo si es necesario"
+                            />
                         </Grid>
                     </Grid>
                 </DialogContent>
