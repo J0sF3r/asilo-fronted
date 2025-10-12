@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Typography, Box, Button, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, CircularProgress, Dialog, DialogTitle,
-    DialogContent, DialogActions, TextField, Grid, FormControl, InputLabel, 
+    DialogContent, DialogActions, TextField, Grid, FormControl, InputLabel,
     Select, MenuItem, Chip, IconButton, Tooltip
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -14,6 +14,16 @@ const TransaccionesPage = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    //capturar rol de usuario para ocultar botones
+    const [userRole, setUserRole] = useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decoded = jwtDecode(token);
+            setUserRole(decoded.user.nombre_rol);
+        }
+    }, []);
     // Filtros
     const [filtroTipo, setFiltroTipo] = useState('todos');
     const [filtroEstado, setFiltroEstado] = useState('todos');
@@ -136,13 +146,13 @@ const TransaccionesPage = () => {
     const formatCurrency = (amount) => `Q${parseFloat(amount).toFixed(2)}`;
 
     const transaccionesFiltradas = data?.transacciones?.filter(t => {
-        const cumpleTipo = filtroTipo === 'todos' || 
+        const cumpleTipo = filtroTipo === 'todos' ||
             (filtroTipo === 'cargos' && t.tipo.startsWith('Cargo')) ||
             (filtroTipo === 'ingresos' && (t.tipo.includes('Ingreso') || t.tipo === 'Pago' || t.tipo.includes('Donación'))) ||
             (filtroTipo === 'gastos' && t.tipo.includes('Gasto'));
-        
+
         const cumpleEstado = filtroEstado === 'todos' || t.estado_pago === filtroEstado;
-        
+
         return cumpleTipo && cumpleEstado;
     }) || [];
 
@@ -156,17 +166,19 @@ const TransaccionesPage = () => {
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
                     Caja y Transacciones
                 </Typography>
-                <Box>
-                    <Button variant="contained" color="error" startIcon={<AddCircleOutlineIcon />} onClick={() => handleOpenModal(true)} sx={{ mr: 2 }}>
-                        Registrar Gasto
-                    </Button>
-                    <Button variant="contained" color="success" startIcon={<AddCircleOutlineIcon />} onClick={() => handleOpenModal(false)}>
-                        Registrar Ingreso
-                    </Button>
-                </Box>
+                {userRole === 'Administración' && (
+                    <Box>
+                        <Button variant="contained" color="error" startIcon={<AddCircleOutlineIcon />} onClick={() => handleOpenModal(true)} sx={{ mr: 2 }}>
+                            Registrar Gasto
+                        </Button>
+                        <Button variant="contained" color="success" startIcon={<AddCircleOutlineIcon />} onClick={() => handleOpenModal(false)}>
+                            Registrar Ingreso
+                        </Button>
+                    </Box>
+                )}
             </Box>
 
-            {/* KPIs */}
+
             {data?.kpis && (
                 <Grid container spacing={2} sx={{ mb: 4 }}>
                     <Grid item xs={12} sm={3}>
@@ -264,8 +276,8 @@ const TransaccionesPage = () => {
                                         </TableCell>
                                         <TableCell align="center">
                                             {t.estado_pago ? (
-                                                <Chip 
-                                                    label={t.estado_pago} 
+                                                <Chip
+                                                    label={t.estado_pago}
                                                     color={t.estado_pago === 'Pagado' ? 'success' : 'warning'}
                                                     size="small"
                                                 />
@@ -273,6 +285,7 @@ const TransaccionesPage = () => {
                                         </TableCell>
                                         <TableCell align="center">
                                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                                                {/* Fundación y Admin pueden aplicar descuentos */}
                                                 {puedeAplicarDescuento && (
                                                     <Tooltip title="Aplicar Descuento">
                                                         <IconButton size="small" color="primary" onClick={() => handleOpenDescuento(t)}>
@@ -280,7 +293,9 @@ const TransaccionesPage = () => {
                                                         </IconButton>
                                                     </Tooltip>
                                                 )}
-                                                {puedeMarcarPagado && (
+
+                                                {/* Solo Admin puede marcar como pagado */}
+                                                {puedeMarcarPagado && userRole === 'Administración' && (
                                                     <Tooltip title="Marcar como Pagado">
                                                         <IconButton size="small" color="success" onClick={() => handleMarcarPagado(t.id_movimiento)}>
                                                             <CheckCircleIcon fontSize="small" />
@@ -343,7 +358,7 @@ const TransaccionesPage = () => {
                             <Typography variant="body1" gutterBottom><strong>Tipo:</strong> {movimientoSeleccionado.tipo}</Typography>
                             <Typography variant="body1" gutterBottom><strong>Descripción:</strong> {movimientoSeleccionado.descripcion}</Typography>
                             <Typography variant="body1" gutterBottom><strong>Monto Original:</strong> {formatCurrency(movimientoSeleccionado.monto_original || movimientoSeleccionado.monto)}</Typography>
-                            
+
                             <TextField
                                 autoFocus
                                 margin="dense"
@@ -355,14 +370,14 @@ const TransaccionesPage = () => {
                                 inputProps={{ min: 0, max: 100, step: 0.1 }}
                                 sx={{ mt: 2 }}
                             />
-                            
+
                             {descuentoData.descuento_aplicado && (
                                 <Box sx={{ mt: 2, p: 2, bgcolor: 'success.lighter', borderRadius: 1 }}>
                                     <Typography variant="body2" color="text.secondary">Monto Final:</Typography>
                                     <Typography variant="h6" color="success.main">
                                         {formatCurrency(
-                                            (parseFloat(movimientoSeleccionado.monto_original || movimientoSeleccionado.monto) * 
-                                            (1 - parseFloat(descuentoData.descuento_aplicado || 0) / 100)).toFixed(2)
+                                            (parseFloat(movimientoSeleccionado.monto_original || movimientoSeleccionado.monto) *
+                                                (1 - parseFloat(descuentoData.descuento_aplicado || 0) / 100)).toFixed(2)
                                         )}
                                     </Typography>
                                 </Box>
