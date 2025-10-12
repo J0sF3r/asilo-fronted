@@ -17,7 +17,12 @@ const FarmaciaPage = () => {
 
     // Modal para registrar cobro de tratamiento fijo
     const [cobroFijoModal, setCobroFijoModal] = useState({ open: false, data: null });
-    const [cobroFijoFormData, setCobroFijoFormData] = useState({ cantidad_dispensada: '', costo_total: '' });
+    const [cobroFijoFormData, setCobroFijoFormData] =
+        useState({
+            cantidad_numerica: '',
+            cantidad_dispensada: '',
+            costo_total: ''
+        });
 
     const fetchData = async () => {
         setLoading(true);
@@ -69,7 +74,24 @@ const FarmaciaPage = () => {
         setCobroFijoModal({ open: false, data: null });
         setCobroFijoFormData({ cantidad_dispensada: '', costo_total: '' });
     };
-    const handleCobroFijoChange = (e) => setCobroFijoFormData({ ...cobroFijoFormData, [e.target.name]: e.target.value });
+    const handleCobroFijoChange = (e) => {
+        const { name, value } = e.target;
+
+        setCobroFijoFormData(prev => {
+            const newData = { ...prev, [name]: value };
+
+            // Auto-calcular si cambia la cantidad numérica
+            if (name === 'cantidad_numerica' && cobroFijoModal.data?.costo_unitario) {
+                const cantidad = parseFloat(value);
+                if (!isNaN(cantidad) && cantidad > 0) {
+                    const costoUnitario = parseFloat(cobroFijoModal.data.costo_unitario);
+                    newData.costo_total = (cantidad * costoUnitario).toFixed(2);
+                }
+            }
+
+            return newData;
+        });
+    };
     const handleCobroFijoSubmit = async () => {
         if (!cobroFijoFormData.costo_total) return alert('El costo total es requerido.');
         try {
@@ -196,14 +218,26 @@ const FarmaciaPage = () => {
                     </Box>
 
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                name="cantidad_numerica"
+                                label="Cantidad"
+                                type="number"
+                                value={cobroFijoFormData.cantidad_numerica}
+                                onChange={handleCobroFijoChange}
+                                fullWidth
+                                required
+                                inputProps={{ min: 1, step: 1 }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 name="cantidad_dispensada"
-                                label="Cantidad Dispensada"
+                                label="Descripción"
                                 value={cobroFijoFormData.cantidad_dispensada}
                                 onChange={handleCobroFijoChange}
                                 fullWidth
-                                placeholder="Ej: 1 caja de 30 tabletas"
+                                placeholder="Ej: tabletas, cajas, frascos"
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -216,9 +250,10 @@ const FarmaciaPage = () => {
                                 fullWidth
                                 required
                                 inputProps={{ min: 0, step: 0.01 }}
-                                helperText="Este campo está pre-llenado, puedes modificarlo si es necesario"
+                                helperText="Calculado automáticamente, puedes modificarlo si es necesario"
                             />
                         </Grid>
+                        F
                     </Grid>
                 </DialogContent>
                 <DialogActions>
