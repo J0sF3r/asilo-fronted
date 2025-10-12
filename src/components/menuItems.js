@@ -11,6 +11,7 @@ import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import WcIcon from '@mui/icons-material/Wc';
 import EscalatorWarningIcon from '@mui/icons-material/EscalatorWarning';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+import PaymentIcon from '@mui/icons-material/Payment';
 
 const allMenuItems = [
     {
@@ -91,7 +92,12 @@ const allMenuItems = [
     icon: <PointOfSaleIcon />, 
     allowedRoles: ['Administración', 'Fundación']
 },
-
+{
+        text: 'Cuotas Mensuales', 
+        path: '/cuotas',
+        icon: <PaymentIcon />,
+        allowedRoles: ['Administración'] 
+    },
 
 ];
 

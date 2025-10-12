@@ -9,7 +9,7 @@ import theme from './theme';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import UsersPage from './pages/UsersPage';
-import PacientesPage from './pages/PacientesPage'; 
+import PacientesPage from './pages/PacientesPage';
 import FamiliaresPage from './pages/FamiliaresPage';
 import PacienteDetailPage from './pages/PacienteDetailPage';
 import MedicosPage from './pages/MedicosPage';
@@ -17,11 +17,12 @@ import EnfermerosPage from './pages/EnfermerosPage';
 import SolicitudesPage from './pages/SolicitudesPage';
 import AgendaCitasPage from './pages/AgendaCitasPage';
 import ExamenesPage from './pages/ExamenesPage';
-import LaboratorioPage  from './pages/LaboratorioPage';
+import LaboratorioPage from './pages/LaboratorioPage';
 import MedicamentosPage from './pages/MedicamentosPage';
 import FarmaciaPage from './pages/FarmaciaPage';
 import TransaccionesPage from './pages/TransaccionesPage';
 import EstadoCuentaPage from './pages/EstadoCuentaPage';
+import CuotasPage from './pages/CuotasPage';
 
 import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -49,14 +50,14 @@ function App() {
         {/* Ruta para la Administración de Usuarios */}
         <Route path="/usuarios" element={
           <ProtectedRoute><MainLayout><UsersPage /></MainLayout> </ProtectedRoute>
-        }/>
+        } />
         <Route path="/pacientes" element={
           <ProtectedRoute> <MainLayout> <PacientesPage /> </MainLayout> </ProtectedRoute>
         } />
-          <Route path="/familiares" element={
+        <Route path="/familiares" element={
           <ProtectedRoute> <MainLayout> <FamiliaresPage /> </MainLayout> </ProtectedRoute>
         } />
-          <Route path="/pacientes/:id" element={
+        <Route path="/pacientes/:id" element={
           <ProtectedRoute> <MainLayout> <PacienteDetailPage /> </MainLayout> </ProtectedRoute>
         } />
         <Route path="/medicos" element={
@@ -88,6 +89,10 @@ function App() {
         } />
         <Route path="/familiares/:id/estado-de-cuenta" element={
           <ProtectedRoute> <MainLayout> <EstadoCuentaPage /> </MainLayout> </ProtectedRoute>
+        } />
+
+        <Route path="/cuotas" element={
+          <ProtectedRoute> <MainLayout> <CuotasPage /> </MainLayout> </ProtectedRoute>
         } />
 
       </Routes>
