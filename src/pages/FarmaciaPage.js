@@ -57,10 +57,17 @@ const FarmaciaPage = () => {
     };
 
     // --- Lógica para Tratamientos Fijos ---
-    const handleOpenCobroFijo = (tratamiento) => setCobroFijoModal({ open: true, data: tratamiento });
+    const handleOpenCobroFijo = (tratamiento) => {
+        setCobroFijoFormData({
+            cantidad_dispensada: '',
+            costo_total: tratamiento.costo_unitario || ''
+        });
+        setCobroFijoModal({ open: true, data: tratamiento });
+    };
+
     const handleCloseCobroFijo = () => {
         setCobroFijoModal({ open: false, data: null });
-        setCobroFijoFormData({ cantidad_dispensada: '', costo_total: tratamiento.costo_unitario || '' });
+        setCobroFijoFormData({ cantidad_dispensada: '', costo_total: '' });
     };
     const handleCobroFijoChange = (e) => setCobroFijoFormData({ ...cobroFijoFormData, [e.target.name]: e.target.value });
     const handleCobroFijoSubmit = async () => {
