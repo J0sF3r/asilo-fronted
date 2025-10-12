@@ -172,9 +172,6 @@ const TransaccionesPage = () => {
                         <Button variant="contained" color="error" startIcon={<AddCircleOutlineIcon />} onClick={() => handleOpenModal(true)} sx={{ mr: 2 }}>
                             Registrar Gasto
                         </Button>
-                        <Button variant="contained" color="success" startIcon={<AddCircleOutlineIcon />} onClick={() => handleOpenModal(false)}>
-                            Registrar Ingreso
-                        </Button>
                     </Box>
                 )}
             </Box>

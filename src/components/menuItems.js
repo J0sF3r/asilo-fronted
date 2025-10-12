@@ -12,6 +12,7 @@ import WcIcon from '@mui/icons-material/Wc';
 import EscalatorWarningIcon from '@mui/icons-material/EscalatorWarning';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import PaymentIcon from '@mui/icons-material/Payment';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 
 const allMenuItems = [
     {
@@ -98,6 +99,12 @@ const allMenuItems = [
         icon: <PaymentIcon />,
         allowedRoles: ['Administración'] 
     },
+    {
+    text: 'Donantes y Donaciones',
+    path: '/donantes',
+    icon: <VolunteerActivismIcon />,
+    allowedRoles: ['Administración']
+},
 
 ];
 
