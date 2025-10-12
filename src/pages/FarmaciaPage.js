@@ -64,21 +64,22 @@ const FarmaciaPage = () => {
     };
     const handleCobroFijoChange = (e) => setCobroFijoFormData({ ...cobroFijoFormData, [e.target.name]: e.target.value });
     const handleCobroFijoSubmit = async () => {
-        if (!cobroFijoFormData.costo_total) return alert('El costo total es requerido.');
-        try {
-            const dataToSend = {
-                id_tratamiento_fijo: cobroFijoModal.data.id_tratamiento,
-                ...cobroFijoFormData
-            };
-            await api.post('/cobros-medicamentos', dataToSend);
-            handleCloseCobroFijo();
-            fetchData();
-            alert('Cobro de tratamiento fijo registrado exitosamente.');
-        } catch (err) {
-            console.error("Error al registrar cobro:", err);
-            alert('No se pudo registrar el cobro.');
-        }
-    };
+    if (!cobroFijoFormData.costo_total) return alert('El costo total es requerido.');
+    try {
+        const dataToSend = {
+            id_tratamiento_fijo: cobroFijoModal.data.id_tratamiento,
+            cantidad_dispensada: cobroFijoFormData.cantidad_dispensada,
+            costo_total: cobroFijoFormData.costo_total
+        };
+        await api.post('/cobros-medicamentos', dataToSend); // ← Cambio aquí
+        handleCloseCobroFijo();
+        fetchData();
+        alert('Cobro de tratamiento fijo registrado exitosamente.');
+    } catch (err) {
+        console.error("Error al registrar cobro:", err);
+        alert('No se pudo registrar el cobro.');
+    }
+};
 
     if (loading) { return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>; }
 
