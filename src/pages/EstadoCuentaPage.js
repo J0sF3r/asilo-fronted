@@ -13,6 +13,20 @@ const EstadoCuentaPage = () => {
 
     const [modalPagoOpen, setModalPagoOpen] = useState(false);
     const [pagoData, setPagoData] = useState({ monto: '', descripcion: '' });
+    
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const res = await api.get(`/familiares/${id}/estado-de-cuenta`);
+            setEstadoCuenta(res.data);
+        } catch (err) {
+            console.error("Error al obtener el estado de cuenta:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     useEffect(() => {
         const fetchEstadoCuenta = async () => {
