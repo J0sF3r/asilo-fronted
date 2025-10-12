@@ -330,7 +330,7 @@ const AgendaCitasPage = () => {
                                 </Grid>
                             </Paper>
                             <Paper sx={{ p: 2 }}>
-                                <Typography variant="h6" gutterBottom>Gestión de Exámenes</Typography>
+                                <Typography variant="h6" gutterBottom>Gestión de los Exámenes</Typography>
                                 <List dense sx={{ mb: 2 }}>
                                     {assignedExamenes.map(ex => (
                                         <ListItem key={ex.id_examen} secondaryAction={<IconButton edge="end" size="small" color="error" onClick={() => handleRemoveExamen(ex.id_examen)} disabled={isReadOnly}> <DeleteIcon fontSize="small" /> </IconButton>}><ListItemText primary={ex.nombre_examen} secondary={ex.resultado ? `Resultado: ${ex.resultado}` : 'Pendiente'} /></ListItem>
