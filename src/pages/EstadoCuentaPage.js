@@ -31,34 +31,6 @@ const EstadoCuentaPage = () => {
         fetchData();
     }, [id]);
 
-    const handleOpenPagoModal = () => setModalPagoOpen(true);
-    const handleClosePagoModal = () => {
-        setModalPagoOpen(false);
-        setPagoData({ monto: '', descripcion: '' });
-    };
-    
-    const handlePagoChange = (e) => setPagoData({ ...pagoData, [e.target.name]: e.target.value });
-
-    const handlePagoSubmit = async () => {
-        if (!pagoData.monto || parseFloat(pagoData.monto) <= 0) {
-            alert('Por favor ingresa un monto válido.');
-            return;
-        }
-        
-        try {
-            await api.post('/transacciones/pago', {
-                id_familiar: id,
-                monto: pagoData.monto,
-                descripcion: pagoData.descripcion || 'Abono a cuenta'
-            });
-            alert('¡Pago registrado exitosamente!');
-            handleClosePagoModal();
-            fetchData();
-        } catch (err) {
-            console.error("Error al registrar el pago:", err);
-            alert('No se pudo registrar el pago.');
-        }
-    };
 
     const formatCurrency = (amount) => `Q${parseFloat(amount).toFixed(2)}`;
 
@@ -106,10 +78,6 @@ const EstadoCuentaPage = () => {
                         </Box>
                     </Grid>
                 </Grid>
-                
-                <Button variant="contained" color="success" onClick={handleOpenPagoModal}>
-                    Registrar Pago
-                </Button>
             </Paper>
 
             {/* Historial de Transacciones */}
@@ -162,42 +130,6 @@ const EstadoCuentaPage = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
-
-            {/* Modal de Pago */}
-            <Dialog open={modalPagoOpen} onClose={handleClosePagoModal}>
-                <DialogTitle>Registrar Pago</DialogTitle>
-                <DialogContent>
-                    <Grid container spacing={2} sx={{ pt: 1 }}>
-                        <Grid item xs={12}>
-                            <TextField
-                                autoFocus
-                                name="monto"
-                                label="Monto a Pagar (Q)"
-                                type="number"
-                                fullWidth
-                                required
-                                value={pagoData.monto}
-                                onChange={handlePagoChange}
-                                inputProps={{ min: 0, step: 0.01 }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                name="descripcion"
-                                label="Descripción (ej. Abono, Pago de Octubre)"
-                                type="text"
-                                fullWidth
-                                value={pagoData.descripcion}
-                                onChange={handlePagoChange}
-                            />
-                        </Grid>
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClosePagoModal}>Cancelar</Button>
-                    <Button onClick={handlePagoSubmit} variant="contained">Guardar Pago</Button>
-                </DialogActions>
-            </Dialog>
         </Box>
     );
 };
