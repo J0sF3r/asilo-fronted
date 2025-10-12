@@ -145,19 +145,7 @@ const FamiliaresPage = () => {
                                 <TableCell>{familiar.telefono}</TableCell>
                                 <TableCell>{familiar.email}</TableCell>
                                 <TableCell align="right">
-                                    {/* --- MODIFICADO: Se añaden los onClick a los botones --- */}
-                                    <IconButton color="primary" onClick={() => handleOpenEdit(familiar)}><EditIcon /></IconButton>
-                                    <IconButton color="error" onClick={() => handleDeleteOpen(familiar)}><DeleteOutlineIcon /></IconButton>
-                                </TableCell>
-
-                                <TableCell align="right">
-                                    <IconButton
-                                        color="secondary"
-                                        component={RouterLink}
-                                        to={`/familiares/${familiar.id_familiar}/estado-de-cuenta`}
-                                        title="Ver Estado de Cuenta"
-                                    >
-                                        <AccountBalanceWalletIcon />
+                                    <IconButton color="secondary" component={RouterLink} to={`/familiares/${familiar.id_familiar}/estado-de-cuenta`} title="Ver Estado de Cuenta"><AccountBalanceWalletIcon />
                                     </IconButton>
                                     <IconButton color="primary" onClick={() => handleOpenEdit(familiar)}><EditIcon /></IconButton>
                                     <IconButton color="error" onClick={() => handleDeleteOpen(familiar)}><DeleteOutlineIcon /></IconButton>
