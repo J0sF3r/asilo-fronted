@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
     Typography, Box, Button, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle,
-    DialogContent, DialogActions, TextField, Grid, DialogContentText
+    DialogContent, DialogActions, TextField, Grid, DialogContentText, AccountBalanceWalletIcon
 } from '@mui/material';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import api from '../utils/api';
 
 const FamiliaresPage = () => {
