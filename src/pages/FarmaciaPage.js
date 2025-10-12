@@ -253,7 +253,6 @@ const FarmaciaPage = () => {
                                 helperText="Calculado automáticamente, puedes modificarlo si es necesario"
                             />
                         </Grid>
-                        F
                     </Grid>
                 </DialogContent>
                 <DialogActions>
