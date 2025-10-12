@@ -256,9 +256,9 @@ const TransaccionesPage = () => {
                             </TableRow>
                         ) : (
                             transaccionesFiltradas.map((t) => {
-                                const esCargo = t.tipo.startsWith('Cargo');
-                                const puedeAplicarDescuento = esCargo && t.estado_pago === 'Pendiente';
-                                const puedeMarcarPagado = esCargo && t.estado_pago === 'Pendiente';
+                                const esMovimientoEditable = t.tipo.startsWith('Cargo') || t.tipo === 'Cuota Mensual';
+                                const puedeAplicarDescuento = esMovimientoEditable && t.estado_pago === 'Pendiente';
+                                const puedeMarcarPagado = esMovimientoEditable && t.estado_pago === 'Pendiente';
 
                                 return (
                                     <TableRow key={t.id_movimiento}>
@@ -272,7 +272,7 @@ const TransaccionesPage = () => {
                                         <TableCell align="right" sx={{ color: 'success.main' }}>
                                             {t.descuento_aplicado ? `${t.descuento_aplicado}%` : '-'}
                                         </TableCell>
-                                        <TableCell align="right" sx={{ fontWeight: 'bold', color: esCargo ? 'error.main' : 'success.main' }}>
+                                       <TableCell align="right" sx={{ fontWeight: 'bold', color: esMovimientoEditable ? 'error.main' : 'success.main' }}>
                                             {formatCurrency(t.monto)}
                                         </TableCell>
                                         <TableCell align="center">
