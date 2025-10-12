@@ -41,7 +41,7 @@ const SolicitudesPage = () => {
                     setMedicosEspecialistas(medicosRes.data.filter(m => m.tipo === 'Especialista'));
                 }
                 else if (role === 'Fundación') {
-                     const [solicitudesRes, medicosRes, enfermerosRes] = await Promise.all([
+                    const [solicitudesRes, medicosRes, enfermerosRes] = await Promise.all([
                         api.get('/solicitudes'), api.get('/medicos'), api.get('/enfermeros')
                     ]);
                     setSolicitudes(solicitudesRes.data);
@@ -56,7 +56,7 @@ const SolicitudesPage = () => {
                     setSolicitudes(solicitudesRes.data);
                     setEnfermeros(enfermerosRes.data);
                 }
-            }  catch (err) {
+            } catch (err) {
                 console.error("Error al cargar datos:", err);
             }
         };
@@ -81,7 +81,7 @@ const SolicitudesPage = () => {
                 fecha_visita: '',
                 lugar: 'Hospital General del Sur', // Valor por defecto
                 costo_consulta: '',
-                descuento_porcentaje: 0, 
+                descuento_porcentaje: 0,
                 costo_final_con_descuento: ''
             });
         } else { // Creando una nueva solicitud
@@ -95,10 +95,10 @@ const SolicitudesPage = () => {
     };
 
     const handleCloseModal = () => setModalOpen(false);
-    
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        
+
         setFormData(prev => {
             const newForm = { ...prev, [name]: value };
 
@@ -130,7 +130,16 @@ const SolicitudesPage = () => {
                 await api.put(`/solicitudes/${currentSolicitud.id_solicitud}/aprobar`, formData);
                 alert('¡Solicitud aprobada exitosamente!');
             } else if ((userRole === 'Fundación' || userRole === 'Administración') && currentSolicitud.estado === 'aprobada') {
-                 await api.post(`/solicitudes/${currentSolicitud.id_solicitud}/programar`, formData);
+                // Enviar solo los campos que el backend necesita
+                const dataToSend = {
+                    id_medico_especialista: formData.id_medico_especialista,
+                    fecha_visita: formData.fecha_visita,
+                    lugar: formData.lugar,
+                    costo_consulta: formData.costo_consulta,
+                    descuento_porcentaje: formData.descuento_porcentaje
+                };
+
+                await api.post(`/solicitudes/${currentSolicitud.id_solicitud}/programar`, dataToSend);
                 alert('¡Cita programada exitosamente!');
             }
             handleCloseModal();
@@ -254,7 +263,7 @@ const SolicitudesPage = () => {
                     </Button>
                 )}
             </Box>
-            
+
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
