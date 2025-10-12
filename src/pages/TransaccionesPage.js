@@ -8,6 +8,7 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { jwtDecode } from 'jwt-decode';
 import api from '../utils/api';
 
 const TransaccionesPage = () => {
