@@ -259,12 +259,12 @@ const PacienteDetailPage = () => {
 
 
     if (loading) { return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>; }
-    if (!paciente) { return <Typography variant="h5" sx={{ p: 3 }}>Paciente no encontrado.</Typography>; }
+    if (!paciente) { return <Typography variant="h5" sx={{ p: 3 }}>Residente no encontrado.</Typography>; }
 
     return (
         <Box sx={{ flexGrow: 1, p: 3 }}>
             <Button component={RouterLink} to="/pacientes" startIcon={<ArrowBackIcon />} sx={{ mb: 2 }}>
-                Volver a Pacientes
+                Volver a Residentes
             </Button>
 
             <Paper sx={{ p: 3, mb: 4 }}>
@@ -399,7 +399,7 @@ const PacienteDetailPage = () => {
                     </Accordion>
                 ))
             ) : (
-                <Typography>No hay historial de solicitudes para este paciente.</Typography>
+                <Typography>No hay historial de solicitudes para este Residente.</Typography>
             )}
 
             <Box sx={{ mt: 4 }}>
@@ -462,7 +462,7 @@ const PacienteDetailPage = () => {
                                 </React.Fragment>
                             ))
                         ) : (
-                            <ListItem><ListItemText primary="Este paciente no tiene familiares asignados." /></ListItem>
+                            <ListItem><ListItemText primary="Este residente no tiene familiares asignados." /></ListItem>
                         )}
                     </List>
                 </Paper>

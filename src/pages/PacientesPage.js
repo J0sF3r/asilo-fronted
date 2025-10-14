@@ -154,7 +154,7 @@ const PacientesPage = () => {
         <Box sx={{ flexGrow: 1, p: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-                    Gestión de Pacientes
+                    Gestión de Residentes del Asilo
                 </Typography>
 
                 {userRole === 'Administración' && (

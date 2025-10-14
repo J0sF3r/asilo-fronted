@@ -34,7 +34,7 @@ const allMenuItems = [
         allowedRoles: ['Administración', 'Fundación', 'Medico Especialista']
     },
     {
-        text: 'Gestionar Pacientes',
+        text: 'Gestionar Residentes',
         path: '/pacientes',
         icon: <PeopleIcon />,
         allowedRoles: ['Administración', 'Medico General']
