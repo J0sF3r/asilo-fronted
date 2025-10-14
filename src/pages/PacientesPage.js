@@ -4,18 +4,11 @@ import {
     TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle,
     DialogContent, DialogActions, TextField, Grid, DialogContentText, MenuItem,
     Select, InputLabel, FormControl,
-
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { Search
-} from '@mui/material';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import filtroSexo from 'lodash.debounce';
-import setFiltroSexo from 'lodash.debounce';
-import setSearchTerm from 'lodash.debounce';
-import searchTerm from 'lodash.debounce';
 import api from '../utils/api';
 import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -24,6 +17,10 @@ const PacientesPage = () => {
     const [pacientes, setPacientes] = useState([]);
     const [open, setOpen] = useState(false);
     const [userRole, setUserRole] = useState(null);
+
+    // ✅ ESTADOS PARA BÚSQUEDA Y FILTROS (DECLARADOS CORRECTAMENTE)
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filtroSexo, setFiltroSexo] = useState('Todos');
 
     const [isEditing, setIsEditing] = useState(false);
     const [currentPacienteId, setCurrentPacienteId] = useState(null);
@@ -39,6 +36,7 @@ const PacientesPage = () => {
         email: '',
         fecha_ingreso: ''
     });
+
 
     const fetchPacientes = async () => {
         try {
@@ -61,6 +59,14 @@ const PacientesPage = () => {
         fetchPacientes();
     }, []);
 
+    // Filtrar pacientes
+    const pacientesFiltrados = pacientes.filter(p => {
+        const matchNombre = p.nombre
+            ? p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+            : false;
+        const matchSexo = filtroSexo === 'Todos' || p.sexo === filtroSexo;
+        return matchNombre && matchSexo;
+    });
 
     const resetForm = () => {
         setFormData({ nombre: '', fecha_nacimiento: '', fecha_ingreso: '', sexo: '', direccion: '', telefono: '', email: '' });
@@ -124,14 +130,6 @@ const PacientesPage = () => {
         setDeleteConfirmOpen(false);
         setPacienteToDelete(null);
     };
-    // Filtrar pacientes
-const pacientesFiltrados = pacientes.filter(p => {
-    const matchNombre = p.nombre 
-        ? p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-        : false;
-    const matchSexo = filtroSexo === 'Todos' || p.sexo === filtroSexo;
-    return matchNombre && matchSexo;
-});
 
     const handleDeleteConfirm = async () => {
         try {
@@ -205,9 +203,9 @@ const pacientesFiltrados = pacientes.filter(p => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                       {pacientesFiltrados.map(paciente => (
+                        {pacientesFiltrados.map(paciente => (
                             <TableRow key={paciente.id_paciente}>
-                                
+
                                 <TableCell>
                                     <Link to={`/pacientes/${paciente.id_paciente}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                         {paciente.nombre}
