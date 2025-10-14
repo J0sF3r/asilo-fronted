@@ -3,7 +3,7 @@ import {
     Typography, Box, Button, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle,
     DialogContent, DialogActions, TextField, Grid, DialogContentText, MenuItem,
-    Select, InputLabel, FormControl, searchTerm, filtroSexo, setSearchTerm, setFiltroSexo
+    Select, InputLabel, FormControl, filtroSexo, setSearchTerm, setFiltroSexo
 
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -12,6 +12,7 @@ import { Search
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import searchTerm from 'lodash.debounce';
 import api from '../utils/api';
 import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
