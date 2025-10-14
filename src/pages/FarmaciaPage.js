@@ -80,7 +80,7 @@ const FarmaciaPage = () => {
         setCobroFijoFormData(prev => {
             const newData = { ...prev, [name]: value };
 
-            // Auto-calcular si cambia la cantidad numérica
+            // Auto-calcular costo total si cambia la cantidad numérica
             if (name === 'cantidad_numerica' && cobroFijoModal.data?.costo_unitario) {
                 const cantidad = parseFloat(value);
                 if (!isNaN(cantidad) && cantidad > 0) {
@@ -195,7 +195,7 @@ const FarmaciaPage = () => {
             </Dialog>
 
             {/* Modal para Registrar Cobro de Tratamiento Fijo */}
-            <Dialog open={cobroFijoModal.open} onClose={handleCloseCobroFijo}>
+            <Dialog open={cobroFijoModal.open} onClose={handleCloseCobroFijo} maxWidth="md" fullWidth>
                 <DialogTitle>Registrar Dispensación y Cobro</DialogTitle>
                 <DialogContent>
                     <Typography variant="h6">{cobroFijoModal.data?.nombre_paciente}</Typography>
@@ -205,35 +205,71 @@ const FarmaciaPage = () => {
 
                     {/* Información adicional */}
                     <Box sx={{ bgcolor: 'grey.100', p: 2, borderRadius: 1, mb: 2 }}>
-                        <Typography variant="body2"><strong>Dosis:</strong> {cobroFijoModal.data?.dosis}</Typography>
-                        <Typography variant="body2"><strong>Frecuencia:</strong> {cobroFijoModal.data?.frecuencia}</Typography>
-                        <Typography variant="body2"><strong>Última entrega:</strong> {cobroFijoModal.data?.ultima_fecha
-                            ? new Date(cobroFijoModal.data.ultima_fecha).toLocaleDateString('es-GT')
-                            : 'Primera dispensación'}</Typography>
-                        {cobroFijoModal.data?.costo_unitario && (
-                            <Typography variant="body2" color="primary">
-                                <strong>Precio unitario:</strong> Q{parseFloat(cobroFijoModal.data.costo_unitario).toFixed(2)}
-                            </Typography>
-                        )}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <Typography variant="body2"><strong>Dosis:</strong> {cobroFijoModal.data?.dosis}</Typography>
+                                <Typography variant="body2"><strong>Frecuencia:</strong> {cobroFijoModal.data?.frecuencia}</Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Typography variant="body2">
+                                    <strong>Intervalo:</strong> Cada {cobroFijoModal.data?.intervalo_dias || 28} días
+                                </Typography>
+                                <Typography variant="body2"><strong>Última entrega:</strong> {cobroFijoModal.data?.ultima_fecha
+                                    ? new Date(cobroFijoModal.data.ultima_fecha).toLocaleDateString('es-GT')
+                                    : 'Primera dispensación'}
+                                </Typography>
+                            </Grid>
+                            {cobroFijoModal.data?.costo_unitario && (
+                                <Grid item xs={12}>
+                                    <Typography variant="body2" color="primary">
+                                        <strong>Precio unitario:</strong> Q{parseFloat(cobroFijoModal.data.costo_unitario).toFixed(2)}
+                                    </Typography>
+                                </Grid>
+                            )}
+                        </Grid>
                     </Box>
+
+                    {/* Cálculo de cantidad sugerida */}
+                    {cobroFijoModal.data?.intervalo_dias && cobroFijoModal.data?.frecuencia && (
+                        <Box sx={{ bgcolor: 'info.lighter', p: 2, borderRadius: 1, mb: 2 }}>
+                            <Typography variant="body2" color="info.main">
+                                💡 <strong>Cantidad sugerida:</strong> {(() => {
+                                    const intervalo = parseInt(cobroFijoModal.data.intervalo_dias);
+                                    const frecuencia = cobroFijoModal.data.frecuencia.toLowerCase();
+
+                                    // Intentar calcular basado en la frecuencia
+                                    if (frecuencia.includes('día') || frecuencia.includes('dia') || frecuencia.includes('24')) {
+                                        return `${intervalo} unidades (${intervalo} días × 1 por día)`;
+                                    } else if (frecuencia.includes('12 horas') || frecuencia.includes('dos veces') || frecuencia.includes('2 veces')) {
+                                        return `${intervalo * 2} unidades (${intervalo} días × 2 por día)`;
+                                    } else if (frecuencia.includes('8 horas') || frecuencia.includes('tres veces') || frecuencia.includes('3 veces')) {
+                                        return `${intervalo * 3} unidades (${intervalo} días × 3 por día)`;
+                                    } else {
+                                        return `Revisar frecuencia para calcular cantidad exacta`;
+                                    }
+                                })()}
+                            </Typography>
+                        </Box>
+                    )}
 
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 name="cantidad_numerica"
-                                label="Cantidad"
+                                label="Cantidad a Dispensar *"
                                 type="number"
                                 value={cobroFijoFormData.cantidad_numerica}
                                 onChange={handleCobroFijoChange}
                                 fullWidth
                                 required
                                 inputProps={{ min: 1, step: 1 }}
+                                helperText="Cantidad de unidades (tabletas, cápsulas, etc.)"
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 name="cantidad_dispensada"
-                                label="Descripción"
+                                label="Descripción (opcional)"
                                 value={cobroFijoFormData.cantidad_dispensada}
                                 onChange={handleCobroFijoChange}
                                 fullWidth
@@ -250,7 +286,10 @@ const FarmaciaPage = () => {
                                 fullWidth
                                 required
                                 inputProps={{ min: 0, step: 0.01 }}
-                                helperText="Calculado automáticamente, puedes modificarlo si es necesario"
+                                helperText="Calculado automáticamente según cantidad × precio unitario"
+                                InputProps={{
+                                    readOnly: !!cobroFijoFormData.cantidad_numerica && !!cobroFijoModal.data?.costo_unitario
+                                }}
                             />
                         </Grid>
                     </Grid>
