@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Typography, Box, Button, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle,
-    DialogContent, DialogActions, TextField, Grid, DialogContentText 
+    DialogContent, DialogActions, TextField, Grid, DialogContentText
 } from '@mui/material';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import EditIcon from '@mui/icons-material/Edit';
@@ -115,6 +115,12 @@ const PacientesPage = () => {
         setDeleteConfirmOpen(false);
         setPacienteToDelete(null);
     };
+    // Filtrar pacientes
+    const pacientesFiltrados = pacientes.filter(p => {
+        const matchNombre = p.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchSexo = filtroSexo === 'Todos' || p.sexo === filtroSexo;
+        return matchNombre && matchSexo;
+    });
 
     const handleDeleteConfirm = async () => {
         try {
@@ -148,6 +154,29 @@ const PacientesPage = () => {
                     </Button>
                 )}
             </Box>
+            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+                <TextField
+                    placeholder="Buscar por nombre..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    InputProps={{
+                        startAdornment: <SearchIcon />
+                    }}
+                    sx={{ flexGrow: 1 }}
+                />
+                <FormControl sx={{ minWidth: 150 }}>
+                    <InputLabel>Sexo</InputLabel>
+                    <Select
+                        value={filtroSexo}
+                        label="Sexo"
+                        onChange={(e) => setFiltroSexo(e.target.value)}
+                    >
+                        <MenuItem value="Todos">Todos</MenuItem>
+                        <MenuItem value="Masculino">Masculino</MenuItem>
+                        <MenuItem value="Femenino">Femenino</MenuItem>
+                    </Select>
+                </FormControl>
+            </Box>
 
             <TableContainer component={Paper}>
                 <Table>
@@ -155,6 +184,7 @@ const PacientesPage = () => {
                         <TableRow>
                             <TableCell sx={{ fontWeight: 'bold' }}>Nombre</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Fecha de Nacimiento</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Edad</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Sexo</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Teléfono</TableCell>
 
@@ -164,14 +194,16 @@ const PacientesPage = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {pacientes.map((paciente) => (
+                       {pacientesFiltrados.map(paciente => (
                             <TableRow key={paciente.id_paciente}>
+                                
                                 <TableCell>
                                     <Link to={`/pacientes/${paciente.id_paciente}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                         {paciente.nombre}
                                     </Link>
                                 </TableCell>
                                 <TableCell>{formatDate(paciente.fecha_nacimiento)}</TableCell>
+                                <TableCell>{paciente.edad} años</TableCell>
                                 <TableCell>{paciente.sexo}</TableCell>
                                 <TableCell>{paciente.telefono}</TableCell>
 
@@ -189,7 +221,6 @@ const PacientesPage = () => {
 
             {/* Modal para Registrar y Editar Paciente */}
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                {/* --- CAMBIO: El título ahora es dinámico --- */}
                 <DialogTitle>{isEditing ? 'Editar Paciente' : 'Registrar Nuevo Paciente'}</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -203,9 +234,20 @@ const PacientesPage = () => {
                             <TextField required name="fecha_ingreso" label="Fecha de Ingreso al Asilo" type="date" InputLabelProps={{ shrink: true }} fullWidth value={formData.fecha_ingreso} onChange={handleChange}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField name="sexo" label="Sexo" fullWidth value={formData.sexo} onChange={handleChange} />
-                        </Grid>
+
+                        <FormControl fullWidth margin="dense" required>
+                            <InputLabel>Sexo</InputLabel>
+                            <Select
+                                name="sexo"
+                                value={formData.sexo}
+                                label="Sexo"
+                                onChange={handleChange}
+                            >
+                                <MenuItem value="Masculino">Masculino</MenuItem>
+                                <MenuItem value="Femenino">Femenino</MenuItem>
+                            </Select>
+                        </FormControl>
+
                         <Grid item xs={12}>
                             <TextField name="direccion" label="Dirección" fullWidth multiline rows={2} value={formData.direccion} onChange={handleChange} />
                         </Grid>
