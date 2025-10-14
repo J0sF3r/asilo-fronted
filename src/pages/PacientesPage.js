@@ -43,8 +43,8 @@ const PacientesPage = () => {
             const res = await api.get('/pacientes');
             setPacientes(res.data);
         } catch (err) {
-            console.error("Error al obtener los pacientes:", err);
-            alert("No se pudo cargar la lista de pacientes.");
+            console.error("Error al obtener los residentes del asilo:", err);
+            alert("No se pudo cargar la lista los residentes del asilo.");
         }
     };
 
@@ -107,16 +107,16 @@ const PacientesPage = () => {
         try {
             if (isEditing) {
                 await api.put(`/pacientes/${currentPacienteId}`, formData);
-                alert('¡Paciente actualizado exitosamente!');
+                alert('¡Residente actualizado exitosamente!');
             } else {
                 await api.post('/pacientes', formData);
-                alert('¡Paciente registrado exitosamente!');
+                alert('¡Residente registrado exitosamente!');
             }
             handleClose();
             fetchPacientes();
         } catch (err) {
-            console.error("Error al guardar el paciente:", err);
-            alert('Error al guardar el paciente. Verifique los datos.');
+            console.error("Error al guardar al residente :", err);
+            alert('Error al guardar al futuro residente del asilo. Verifique los datos.');
         }
     };
 
@@ -134,11 +134,11 @@ const PacientesPage = () => {
     const handleDeleteConfirm = async () => {
         try {
             await api.delete(`/pacientes/${pacienteToDelete.id_paciente}`);
-            alert('Paciente eliminado exitosamente.');
+            alert('Residente eliminado exitosamente.');
             fetchPacientes();
         } catch (err) {
-            console.error("Error al eliminar el paciente:", err);
-            alert("No se pudo eliminar al paciente.");
+            console.error("Error al eliminar nuestro residente:", err);
+            alert("No se pudo eliminar al residente seleccionado.");
         } finally {
             handleDeleteClose();
         }
@@ -159,7 +159,7 @@ const PacientesPage = () => {
 
                 {userRole === 'Administración' && (
                     <Button variant="contained" startIcon={<PersonAddAlt1Icon />} onClick={handleOpenCreate}>
-                        Registrar Nuevo Paciente
+                        Registrar Nuevo Residente
                     </Button>
                 )}
             </Box>
@@ -230,7 +230,7 @@ const PacientesPage = () => {
 
             {/* Modal para Registrar y Editar Paciente */}
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>{isEditing ? 'Editar Paciente' : 'Registrar Nuevo Paciente'}</DialogTitle>
+                <DialogTitle>{isEditing ? 'Editar Residente seleccionado' : 'Registrar Nuevo Residente'}</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ mt: 1 }}>
                         <Grid item xs={12}>
