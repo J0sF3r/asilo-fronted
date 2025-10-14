@@ -28,6 +28,16 @@ const PacienteDetailPage = () => {
     const [condiciones, setCondiciones] = useState([]);
     const [condicionModal, setCondicionModal] = useState({ open: false, data: null });
     const [tratamientoModal, setTratamientoModal] = useState({ open: false, data: null, id_condicion: null });
+    
+    // NUEVO: Estados para medicamentos
+    const [medicamentos, setMedicamentos] = useState([]);
+    const [tratamientoFormData, setTratamientoFormData] = useState({
+        id_medicamento: '',
+        nombre_medicamento: '',
+        dosis: '',
+        frecuencia: '',
+        intervalo_dias: 28
+    });
 
     // Estados para el modal de familiares
     const [familiarModalOpen, setFamiliarModalOpen] = useState(false);
@@ -37,16 +47,18 @@ const PacienteDetailPage = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [pacienteRes, familiaresRes, historialRes, condicionesRes] = await Promise.all([
+            const [pacienteRes, familiaresRes, historialRes, condicionesRes, medicamentosRes] = await Promise.all([
                 api.get(`/pacientes/${id}`),
                 api.get(`/pacientes/${id}/familiares`),
                 api.get(`/pacientes/${id}/solicitudes`),
-                api.get(`/pacientes/${id}/condiciones`)
+                api.get(`/pacientes/${id}/condiciones`),
+                api.get('/medicamentos') // NUEVO: Cargar medicamentos
             ]);
             setPaciente(pacienteRes.data);
             setFamiliares(familiaresRes.data);
             setHistorial(historialRes.data);
             setCondiciones(condicionesRes.data);
+            setMedicamentos(medicamentosRes.data);
         } catch (err) {
             console.error("Error al obtener los datos:", err);
         } finally {
@@ -55,7 +67,6 @@ const PacienteDetailPage = () => {
     };
 
     useEffect(() => {
-        // --- NUEVO: Leemos el token para saber el rol del usuario ---
         const token = localStorage.getItem('token');
         if (token) {
             const decoded = jwtDecode(token);
@@ -129,25 +140,91 @@ const PacienteDetailPage = () => {
         }
     };
 
-    // --- Funciones para CRUD de Tratamientos Fijos ---
-    const handleOpenTratamientoModal = (id_condicion, data = null) => setTratamientoModal({ open: true, data, id_condicion });
-    const handleCloseTratamientoModal = () => setTratamientoModal({ open: false, data: null, id_condicion: null });
+    // --- Funciones ACTUALIZADAS para CRUD de Tratamientos Fijos ---
+    const handleOpenTratamientoModal = (id_condicion, data = null) => {
+        if (data) {
+            // Editando tratamiento existente
+            setTratamientoFormData({
+                id_medicamento: data.id_medicamento || '',
+                nombre_medicamento: data.nombre_medicamento || '',
+                dosis: data.dosis || '',
+                frecuencia: data.frecuencia || '',
+                intervalo_dias: data.intervalo_dias || 28
+            });
+        } else {
+            // Nuevo tratamiento
+            setTratamientoFormData({
+                id_medicamento: '',
+                nombre_medicamento: '',
+                dosis: '',
+                frecuencia: '',
+                intervalo_dias: 28
+            });
+        }
+        setTratamientoModal({ open: true, data, id_condicion });
+    };
+    
+    const handleCloseTratamientoModal = () => {
+        setTratamientoModal({ open: false, data: null, id_condicion: null });
+        setTratamientoFormData({
+            id_medicamento: '',
+            nombre_medicamento: '',
+            dosis: '',
+            frecuencia: '',
+            intervalo_dias: 28
+        });
+    };
+    
+    const handleTratamientoChange = (e) => {
+        const { name, value } = e.target;
+        
+        setTratamientoFormData(prev => {
+            const newData = { ...prev, [name]: value };
+            
+            // Si cambió el medicamento, auto-llenar el nombre
+            if (name === 'id_medicamento' && value) {
+                const medicamento = medicamentos.find(m => m.id_medicamento === parseInt(value));
+                if (medicamento) {
+                    newData.nombre_medicamento = medicamento.nombre;
+                }
+            }
+            
+            return newData;
+        });
+    };
+    
     const handleTratamientoSubmit = async (event) => {
         event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        const data = Object.fromEntries(formData.entries());
+        
+        if (!tratamientoFormData.nombre_medicamento) {
+            alert('Debes seleccionar un medicamento o ingresar un nombre.');
+            return;
+        }
+        
         try {
+            const dataToSend = {
+                id_medicamento: tratamientoFormData.id_medicamento || null,
+                nombre_medicamento: tratamientoFormData.nombre_medicamento,
+                dosis: tratamientoFormData.dosis,
+                frecuencia: tratamientoFormData.frecuencia,
+                intervalo_dias: tratamientoFormData.intervalo_dias
+            };
+            
             if (tratamientoModal.data) {
-                await api.put(`/tratamientos/${tratamientoModal.data.id_tratamiento}`, data);
+                await api.put(`/tratamientos/${tratamientoModal.data.id_tratamiento}`, dataToSend);
+                alert('Tratamiento actualizado exitosamente.');
             } else {
-                await api.post(`/tratamientos/condicion/${tratamientoModal.id_condicion}`, data);
+                await api.post(`/tratamientos/condicion/${tratamientoModal.id_condicion}`, dataToSend);
+                alert('Tratamiento agregado exitosamente.');
             }
             fetchData();
             handleCloseTratamientoModal();
         } catch (err) {
             console.error("Error al guardar el tratamiento:", err);
+            alert('No se pudo guardar el tratamiento.');
         }
     };
+    
     const handleDeleteTratamiento = async (id_tratamiento) => {
         if (window.confirm('¿Seguro que quieres eliminar este tratamiento fijo?')) {
             try {
@@ -168,7 +245,6 @@ const PacienteDetailPage = () => {
         return <Chip label={status} color={color} size="small" />;
     };
 
-    // --- NUEVO: Función para designar el contacto principal ---
     const handleSetPrincipal = async (id_familiar) => {
         if (window.confirm('¿Estás seguro de que quieres designar a este familiar como el contacto principal?')) {
             try {
@@ -244,7 +320,10 @@ const PacienteDetailPage = () => {
                                                 <IconButton size="small" edge="end" color="error" onClick={() => handleDeleteTratamiento(t.id_tratamiento)}><DeleteIcon /></IconButton>
                                             </>
                                         }>
-                                            <ListItemText primary={t.nombre_medicamento} secondary={`Dosis: ${t.dosis} - Frecuencia: ${t.frecuencia}`} />
+                                            <ListItemText 
+                                                primary={t.nombre_medicamento} 
+                                                secondary={`Dosis: ${t.dosis} - Frecuencia: ${t.frecuencia} - Intervalo: cada ${t.intervalo_dias} días`} 
+                                            />
                                         </ListItem>
                                     ))
                                 ) : <Typography variant="body2" sx={{ fontStyle: 'italic', pl: 2 }}>No hay tratamientos asignados.</Typography>}
@@ -254,6 +333,7 @@ const PacienteDetailPage = () => {
                 ) : <Typography>No hay condiciones de base registradas.</Typography>}
             </Paper>
 
+            {/* ... resto del código de historial y familiares sin cambios ... */}
             <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold', mb: 2 }}>
                 Historial Clínico
             </Typography>
@@ -343,7 +423,6 @@ const PacienteDetailPage = () => {
                                             primary={
                                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                     {familiar.nombre}
-                                                    {/* --- CORRECCIÓN AQUÍ: Muestra la etiqueta si es el principal --- */}
                                                     {familiar.es_contacto_principal && (
                                                         <Chip
                                                             icon={<StarIcon />}
@@ -389,6 +468,7 @@ const PacienteDetailPage = () => {
                 </Paper>
             </Box>
 
+            {/* Modal de Familiar sin cambios */}
             <Dialog open={familiarModalOpen} onClose={handleCloseFamiliarModal} fullWidth maxWidth="xs">
                 <DialogTitle>Asignar un Familiar Existente</DialogTitle>
                 <DialogContent>
@@ -411,6 +491,7 @@ const PacienteDetailPage = () => {
                 </DialogActions>
             </Dialog>
 
+            {/* Modal de Condición sin cambios */}
             <Dialog open={condicionModal.open} onClose={handleCloseCondicionModal} fullWidth maxWidth="sm">
                 <Box component="form" onSubmit={handleCondicionSubmit}>
                     <DialogTitle>{condicionModal.data ? 'Editar Condición' : 'Añadir Nueva Condición'}</DialogTitle>
@@ -426,20 +507,80 @@ const PacienteDetailPage = () => {
                 </Box>
             </Dialog>
 
+            {/* Modal de Tratamiento ACTUALIZADO */}
             <Dialog open={tratamientoModal.open} onClose={handleCloseTratamientoModal} fullWidth maxWidth="sm">
-                <Box component="form" onSubmit={handleTratamientoSubmit}>
+                <form onSubmit={handleTratamientoSubmit}>
                     <DialogTitle>{tratamientoModal.data ? 'Editar Tratamiento' : 'Añadir Nuevo Tratamiento'}</DialogTitle>
                     <DialogContent>
-                        <TextField name="nombre_medicamento" label="Nombre del Medicamento" defaultValue={tratamientoModal.data?.nombre_medicamento} fullWidth required margin="dense" />
-                        <TextField name="dosis" label="Dosis" defaultValue={tratamientoModal.data?.dosis} fullWidth margin="dense" />
-                        <TextField name="frecuencia" label="Frecuencia" defaultValue={tratamientoModal.data?.frecuencia} fullWidth margin="dense" />
-                        <TextField name="fecha_inicio" label="Fecha de Inicio" type="date" defaultValue={tratamientoModal.data?.fecha_inicio?.split('T')[0]} fullWidth required margin="dense" InputLabelProps={{ shrink: true }} />
+                        <FormControl fullWidth margin="dense" required>
+                            <InputLabel>Medicamento</InputLabel>
+                            <Select
+                                name="id_medicamento"
+                                value={tratamientoFormData.id_medicamento}
+                                label="Medicamento"
+                                onChange={handleTratamientoChange}
+                            >
+                                <MenuItem value="">
+                                    <em>Seleccionar medicamento</em>
+                                </MenuItem>
+                                {medicamentos.map(m => (
+                                    <MenuItem key={m.id_medicamento} value={m.id_medicamento}>
+                                        {m.nombre} - Q{parseFloat(m.costo || 0).toFixed(2)}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        
+                        <TextField 
+                            name="nombre_medicamento" 
+                            label="Nombre del Medicamento" 
+                            value={tratamientoFormData.nombre_medicamento}
+                            onChange={handleTratamientoChange}
+                            fullWidth 
+                            required 
+                            margin="dense"
+                            helperText="Este campo se llena automáticamente al seleccionar un medicamento"
+                            InputProps={{
+                                readOnly: !!tratamientoFormData.id_medicamento
+                            }}
+                        />
+                        
+                        <TextField 
+                            name="dosis" 
+                            label="Dosis (ej: 10mg, 1 tableta)" 
+                            value={tratamientoFormData.dosis}
+                            onChange={handleTratamientoChange}
+                            fullWidth 
+                            margin="dense" 
+                        />
+                        
+                        <TextField 
+                            name="frecuencia" 
+                            label="Frecuencia (ej: 1 vez al día, cada 8 horas)" 
+                            value={tratamientoFormData.frecuencia}
+                            onChange={handleTratamientoChange}
+                            fullWidth 
+                            margin="dense" 
+                        />
+                        
+                        <TextField 
+                            name="intervalo_dias" 
+                            label="Intervalo (días)" 
+                            type="number"
+                            value={tratamientoFormData.intervalo_dias}
+                            onChange={handleTratamientoChange}
+                            fullWidth 
+                            required
+                            margin="dense"
+                            helperText="Cada cuántos días se debe dispensar este medicamento"
+                            inputProps={{ min: 1, max: 365 }}
+                        />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCloseTratamientoModal}>Cancelar</Button>
                         <Button type="submit" variant="contained">Guardar</Button>
                     </DialogActions>
-                </Box>
+                </form>
             </Dialog>
 
         </Box>

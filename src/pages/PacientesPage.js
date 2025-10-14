@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Typography, Box, Button, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle,
-    DialogContent, DialogActions, TextField, Grid, DialogContentText // <-- Se agregó DialogContentText
+    DialogContent, DialogActions, TextField, Grid, DialogContentText 
 } from '@mui/material';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import EditIcon from '@mui/icons-material/Edit';
@@ -16,7 +16,6 @@ const PacientesPage = () => {
     const [open, setOpen] = useState(false);
     const [userRole, setUserRole] = useState(null);
 
-    // --- CAMBIOS: ESTADOS PARA MANEJAR EDICIÓN Y BORRADO ---
     const [isEditing, setIsEditing] = useState(false);
     const [currentPacienteId, setCurrentPacienteId] = useState(null);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -70,7 +69,6 @@ const PacientesPage = () => {
         resetForm();
     };
 
-    // --- NUEVA FUNCIÓN PARA ABRIR EL MODAL EN MODO EDICIÓN ---
     const handleOpenEdit = (paciente) => {
         setIsEditing(true);
         setCurrentPacienteId(paciente.id_paciente);
@@ -90,7 +88,6 @@ const PacientesPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // --- FUNCIÓN handleSubmit MODIFICADA PARA CREAR O EDITAR ---
     const handleSubmit = async () => {
         try {
             if (isEditing) {

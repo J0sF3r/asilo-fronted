@@ -97,7 +97,6 @@ function App() {
         <Route path="/donantes" element={
           <ProtectedRoute> <MainLayout> <DonantesPage /> </MainLayout> </ProtectedRoute>
         } />
-
       </Routes>
     </ThemeProvider>
   );
