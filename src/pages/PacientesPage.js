@@ -125,11 +125,13 @@ const PacientesPage = () => {
         setPacienteToDelete(null);
     };
     // Filtrar pacientes
-    const pacientesFiltrados = pacientes.filter(p => {
-        const matchNombre = p.nombre.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchSexo = filtroSexo === 'Todos' || p.sexo === filtroSexo;
-        return matchNombre && matchSexo;
-    });
+const pacientesFiltrados = pacientes.filter(p => {
+    const matchNombre = p.nombre 
+        ? p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        : false;
+    const matchSexo = filtroSexo === 'Todos' || p.sexo === filtroSexo;
+    return matchNombre && matchSexo;
+});
 
     const handleDeleteConfirm = async () => {
         try {
