@@ -302,7 +302,7 @@ const SolicitudesPage = () => {
         <Box sx={{ flexGrow: 1, p: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Typography variant="h4" component="h1">Gestión de Solicitudes</Typography>
-                {(userRole === 'Administración' || userRole === 'Fundación') && (
+                {(userRole === 'Administración') && (
                     <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={() => handleOpenModal()}>
                         Crear Solicitud
                     </Button>
