@@ -24,7 +24,7 @@ import TransaccionesPage from './pages/TransaccionesPage';
 import EstadoCuentaPage from './pages/EstadoCuentaPage';
 import CuotasPage from './pages/CuotasPage';
 import DonantesPage from './pages/DonantesPage';
-import ReportesPage from './pages/ReportsPage';
+import ReportesPage from './pages/ReportesPage';
 
 import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
