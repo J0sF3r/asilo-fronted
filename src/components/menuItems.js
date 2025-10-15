@@ -13,6 +13,7 @@ import EscalatorWarningIcon from '@mui/icons-material/EscalatorWarning';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import PaymentIcon from '@mui/icons-material/Payment';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 const allMenuItems = [
     {
@@ -25,7 +26,7 @@ const allMenuItems = [
         text: 'Solicitudes Médicas',
         path: '/solicitudes',
         icon: <AssignmentIcon />,
-        allowedRoles: ['Administración', 'Medico General', 'Fundación', ]
+        allowedRoles: ['Administración', 'Medico General', 'Fundación',]
     },
     {
         text: 'Agenda de Citas',
@@ -61,13 +62,13 @@ const allMenuItems = [
         text: 'Portal Laboratorio',
         path: '/laboratorio',
         icon: <ScienceIcon />,
-        allowedRoles: ['Laboratorio', 'Administración'] 
+        allowedRoles: ['Laboratorio', 'Administración']
     },
     {
         text: 'Portal Farmacia',
         path: '/farmacia',
         icon: <MedicationIcon />,
-        allowedRoles: ['Farmacia', 'Administración'] 
+        allowedRoles: ['Farmacia', 'Administración']
     },
     {
         text: 'Exámenes Médicos',
@@ -88,23 +89,29 @@ const allMenuItems = [
         allowedRoles: ['Administración']
     },
     {
-    text: 'Caja y Transacciones',
-    path: '/transacciones',
-    icon: <PointOfSaleIcon />, 
-    allowedRoles: ['Administración', 'Fundación']
-},
-{
-        text: 'Cuotas Mensuales', 
-        path: '/cuotas',
-        icon: <PaymentIcon />,
-        allowedRoles: ['Administración'] 
+        text: 'Caja y Transacciones',
+        path: '/transacciones',
+        icon: <PointOfSaleIcon />,
+        allowedRoles: ['Administración', 'Fundación']
     },
     {
-    text: 'Donantes y Donaciones',
-    path: '/donantes',
-    icon: <VolunteerActivismIcon />,
-    allowedRoles: ['Administración']
-},
+        text: 'Cuotas Mensuales',
+        path: '/cuotas',
+        icon: <PaymentIcon />,
+        allowedRoles: ['Administración']
+    },
+    {
+        text: 'Donantes y Donaciones',
+        path: '/donantes',
+        icon: <VolunteerActivismIcon />,
+        allowedRoles: ['Administración']
+    },
+    {
+        text: 'Reportes',
+        path: '/reportes',
+        icon: <AssessmentIcon />,
+        allowedRoles: ['Administración', 'Fundación']  // ← Roles que pueden ver reportes
+    },
 
 ];
 
