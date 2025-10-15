@@ -24,6 +24,7 @@ import TransaccionesPage from './pages/TransaccionesPage';
 import EstadoCuentaPage from './pages/EstadoCuentaPage';
 import CuotasPage from './pages/CuotasPage';
 import DonantesPage from './pages/DonantesPage';
+import ReportesPage from './pages/ReportsPage';
 
 import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -97,6 +98,10 @@ function App() {
         <Route path="/donantes" element={
           <ProtectedRoute> <MainLayout> <DonantesPage /> </MainLayout> </ProtectedRoute>
         } />
+        <Route path="/reportes" element={
+          <ProtectedRoute> <MainLayout> <ReportesPage /> </MainLayout> </ProtectedRoute>
+        } />
+
       </Routes>
     </ThemeProvider>
   );
