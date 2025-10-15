@@ -173,7 +173,14 @@ const ReporteCobros = () => {
 
                     {/* Vista previa del reporte */}
                     <Paper sx={{ p: 3 }} id="reporte-print">
-                        <Box sx={{ textAlign: 'center', mb: 3 }}>
+                        {/* ✅ AGREGAR LOGO AQUÍ */}
+                        <Box sx={{ textAlign: 'center', mb: 2 }}>
+                            <img
+                                src="/logo-asilo.png"
+                                alt="Logo Asilo"
+                                style={{ height: '60px', marginBottom: '10px' }}
+                                className="logo-print"
+                            />
                             <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
                                 Asilo de Ancianos Cabeza de Algodón
                             </Typography>
