@@ -321,7 +321,7 @@ const AgendaCitasPage = () => {
                                             label="Observaciones y Plan de Tratamiento"
                                             fullWidth
                                             multiline
-                                            rows={4} 
+                                            rows={4}
                                             value={updateData.observaciones_medicas}
                                             onChange={handleChange}
                                             disabled={isReadOnly}
@@ -336,11 +336,18 @@ const AgendaCitasPage = () => {
                                         <ListItem key={ex.id_examen} secondaryAction={<IconButton edge="end" size="small" color="error" onClick={() => handleRemoveExamen(ex.id_examen)} disabled={isReadOnly}> <DeleteIcon fontSize="small" /> </IconButton>}><ListItemText primary={ex.nombre_examen} secondary={ex.resultado ? `Resultado: ${ex.resultado}` : 'Pendiente'} /></ListItem>
                                     ))}
                                 </List>
-                                <FormControl fullWidth sx={{ mb: 2 }} disabled={isReadOnly}><InputLabel>Añadir Examen</InputLabel>
-                                    <Select value={selectedExamenId} label="Añadir Examen" onChange={(e) => setSelectedExamenId(e.target.value)}>
-                                        {allExamenes.map(ex => <MenuItem key={ex.id_examen} value={ex.id_examen}>{ex.nombre_examen}</MenuItem>)}
-                                    </Select>
-                                </FormControl>
+                                <Autocomplete
+                                    options={allExamenes}
+                                    getOptionLabel={(option) => option.nombre_examen || ''}
+                                    value={allExamenes.find(ex => ex.id_examen === selectedExamenId) || null}
+                                    onChange={(event, newValue) => {
+                                        setSelectedExamenId(newValue ? newValue.id_examen : '');
+                                    }}
+                                    PopperComponent={(props) => <Popper {...props} style={{ zIndex: 1400 }} />}
+                                    renderInput={(params) => <TextField {...params} label="Buscar Examen" placeholder="Ej: Hemograma, Glucosa..." />}
+                                    disabled={isReadOnly}
+                                    sx={{ mb: 2 }}
+                                />
                                 <Button variant="contained" startIcon={<AddCircleIcon />} onClick={handleAddExamen} fullWidth disabled={!selectedExamenId || isReadOnly}>Añadir Examen</Button>
                             </Paper>
                         </Grid>
