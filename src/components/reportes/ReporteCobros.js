@@ -176,7 +176,7 @@ const ReporteCobros = () => {
                         {/* ✅ AGREGAR LOGO AQUÍ */}
                         <Box sx={{ textAlign: 'center', mb: 2 }}>
                             <img
-                                src="/logo-asilo.png"
+                                src="/assets/logo-asilo.png"
                                 alt="Logo Asilo"
                                 style={{ height: '60px', marginBottom: '10px' }}
                                 className="logo-print"
