@@ -217,3 +217,95 @@ export const generarPDFPagosFundacion = (datos, fechaInicio, fechaFin) => {
     
     doc.save(`Reporte_Pagos_Fundacion_${new Date().toISOString().split('T')[0]}.pdf`);
 };
+
+export const generarPDFEntradas = (datos, fechaInicio, fechaFin) => {
+    const doc = new jsPDF();
+    
+    if (LOGO_BASE64 && LOGO_BASE64.length > 100) {
+        try {
+            doc.addImage(LOGO_BASE64, 'PNG', 92, 8, 25, 25);
+        } catch (error) {
+            console.warn('No se pudo agregar el logo:', error);
+        }
+    }
+    
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text('Asilo de Ancianos Cabeza de Algodón', 105, 38, { align: 'center' });
+    
+    doc.setFontSize(13);
+    doc.text('Reporte de Entradas (Donaciones y Cobros)', 105, 45, { align: 'center' });
+    
+    doc.setLineWidth(0.5);
+    doc.line(14, 50, 196, 50);
+    
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Período: ${formatearFecha(fechaInicio)} - ${formatearFecha(fechaFin)}`, 14, 57);
+    doc.text(`Fecha de emisión: ${formatearFecha(new Date().toISOString().split('T')[0])}`, 14, 63);
+    
+    const tableData = datos.transacciones.map(t => [
+        new Date(t.fecha).toLocaleDateString('es-GT'),
+        t.tipo,
+        t.descripcion,
+        t.nombre_familiar || t.nombre_donante || 'N/A',
+        `Q${parseFloat(t.monto).toFixed(2)}`
+    ]);
+    
+    autoTable(doc, {
+        startY: 69,
+        head: [['Fecha', 'Tipo', 'Descripción', 'Origen', 'Monto']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: { 
+            fillColor: [46, 125, 50],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            halign: 'center',
+            fontSize: 9
+        },
+        styles: { fontSize: 8, cellPadding: 3 },
+        columnStyles: {
+            0: { cellWidth: 25 },
+            1: { cellWidth: 35 },
+            2: { cellWidth: 55 },
+            3: { cellWidth: 40 },
+            4: { cellWidth: 25, halign: 'right' }
+        }
+    });
+    
+    const finalY = doc.lastAutoTable.finalY + 10;
+    
+    doc.setFillColor(240, 240, 240);
+    doc.rect(14, finalY, 182, 32, 'F');
+    
+    doc.setFont(undefined, 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(46, 125, 50);
+    doc.text('Resumen de Ingresos', 20, finalY + 8);
+    
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    
+    doc.text('Donaciones:', 20, finalY + 16);
+    doc.text(`Q${datos.totalDonaciones}`, 65, finalY + 16);
+    
+    doc.text('Cobros/Cuotas:', 20, finalY + 23);
+    doc.text(`Q${datos.totalCobros}`, 65, finalY + 23);
+    
+    doc.text('Otros Ingresos:', 100, finalY + 16);
+    doc.text(`Q${datos.totalOtrosIngresos}`, 145, finalY + 16);
+    
+    doc.setFont(undefined, 'bold');
+    doc.text('Total General:', 100, finalY + 23);
+    doc.setTextColor(46, 125, 50);
+    doc.text(`Q${datos.totalGeneral}`, 145, finalY + 23);
+    
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.setFont(undefined, 'normal');
+    doc.text('Documento generado electrónicamente', 105, 285, { align: 'center' });
+    
+    doc.save(`Reporte_Entradas_${new Date().toISOString().split('T')[0]}.pdf`);
+};

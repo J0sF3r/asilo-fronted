@@ -111,3 +111,51 @@ export const generarExcelPagosFundacion = (datos, fechaInicio, fechaFin) => {
     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     saveAs(data, `Reporte_Pagos_Fundacion_${new Date().toISOString().split('T')[0]}.xlsx`);
 };
+
+export const generarExcelEntradas = (datos, fechaInicio, fechaFin) => {
+    const header = [
+        ['Asilo de Ancianos Cabeza de Algodón'],
+        ['Reporte de Entradas (Donaciones y Cobros)'],
+        [],
+        [`Período: ${new Date(fechaInicio).toLocaleDateString('es-GT')} - ${new Date(fechaFin).toLocaleDateString('es-GT')}`],
+        [`Fecha de emisión: ${new Date().toLocaleDateString('es-GT')}`],
+        []
+    ];
+    
+    const tableHeaders = [['Fecha', 'Tipo', 'Descripción', 'Origen', 'Monto']];
+    
+    const tableData = datos.transacciones.map(t => [
+        new Date(t.fecha).toLocaleDateString('es-GT'),
+        t.tipo,
+        t.descripcion,
+        t.nombre_familiar || t.nombre_donante || 'N/A',
+        parseFloat(t.monto).toFixed(2)
+    ]);
+    
+    const resumen = [
+        [],
+        ['Resumen de Ingresos'],
+        ['Donaciones', datos.totalDonaciones],
+        ['Cobros/Cuotas', datos.totalCobros],
+        ['Otros Ingresos', datos.totalOtrosIngresos],
+        ['Total General', datos.totalGeneral]
+    ];
+    
+    const wsData = [...header, ...tableHeaders, ...tableData, ...resumen];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    
+    ws['!cols'] = [
+        { wch: 12 },
+        { wch: 25 },
+        { wch: 50 },
+        { wch: 30 },
+        { wch: 15 }
+    ];
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Entradas');
+    
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(data, `Reporte_Entradas_${new Date().toISOString().split('T')[0]}.xlsx`);
+};
