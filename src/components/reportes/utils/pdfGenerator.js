@@ -8,33 +8,33 @@ const LOGO_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkQAAAIjCAYAA
 export const generarPDFCobros = (datos, familiar, fechaInicio, fechaFin) => {
     const doc = new jsPDF();
     
-    // ✅ Agregar logo (ajustado)
+    // ✅ Logo centrado arriba (más pequeño y centrado)
     if (LOGO_BASE64 && LOGO_BASE64.length > 100) {
         try {
-            doc.addImage(LOGO_BASE64, 'PNG', 14, 10, 25, 25); // ← Más pequeño
+            doc.addImage(LOGO_BASE64, 'PNG', 92, 8, 25, 25); // ← Centrado: (210-25)/2 = 92
         } catch (error) {
             console.warn('No se pudo agregar el logo:', error);
         }
     }
     
-    // ✅ Encabezado movido hacia abajo para no sobreponerse
+    // ✅ Encabezado debajo del logo
     doc.setFontSize(16);
     doc.setFont(undefined, 'bold');
-    doc.text('Asilo de Ancianos Cabeza de Algodón', 105, 18, { align: 'center' });
+    doc.text('Asilo de Ancianos Cabeza de Algodón', 105, 38, { align: 'center' });
     
     doc.setFontSize(13);
-    doc.text('Reporte de Cobros por Familiar', 105, 25, { align: 'center' });
+    doc.text('Reporte de Cobros por Familiar', 105, 45, { align: 'center' });
     
-    // Línea divisoria más abajo
+    // Línea divisoria
     doc.setLineWidth(0.5);
-    doc.line(14, 30, 196, 30);
+    doc.line(14, 50, 196, 50);
     
     // Información del familiar
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
-    doc.text(`Familiar: ${familiar.nombre}`, 14, 37);
-    doc.text(`Período: ${new Date(fechaInicio).toLocaleDateString('es-GT')} - ${new Date(fechaFin).toLocaleDateString('es-GT')}`, 14, 43);
-    doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-GT')}`, 14, 49);
+    doc.text(`Familiar: ${familiar.nombre}`, 14, 57);
+    doc.text(`Período: ${new Date(fechaInicio).toLocaleDateString('es-GT')} - ${new Date(fechaFin).toLocaleDateString('es-GT')}`, 14, 63);
+    doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-GT')}`, 14, 69);
     
     // Preparar datos de la tabla
     const tableData = datos.transacciones.map(t => [
@@ -47,9 +47,9 @@ export const generarPDFCobros = (datos, familiar, fechaInicio, fechaFin) => {
         t.estado_pago || '-'
     ]);
     
-    // Generar tabla (más abajo)
+    // Generar tabla
     autoTable(doc, {
-        startY: 55, // ← Ajustado
+        startY: 75,
         head: [['Fecha', 'Tipo', 'Descripción', 'Monto Original', 'Desc.', 'Monto Final', 'Estado']],
         body: tableData,
         theme: 'striped',
