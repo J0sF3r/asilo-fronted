@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     Box, Button, TextField, Table, TableBody, TableCell, TableContainer,
-    TableHead, TableRow, Paper, Typography, Grid, Chip, CircularProgress, Stack
+    TableHead, TableRow, Paper, Typography, Grid, CircularProgress, Stack
 } from '@mui/material';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TableViewIcon from '@mui/icons-material/TableView';
@@ -18,7 +18,6 @@ const ReportePagosFundacion = () => {
     const [loading, setLoading] = useState(false);
 
     React.useEffect(() => {
-        // Establecer fechas por defecto (último mes)
         const hoy = new Date();
         const haceUnMes = new Date(hoy.getFullYear(), hoy.getMonth() - 1, hoy.getDate());
         setFechaInicio(haceUnMes.toISOString().split('T')[0]);
@@ -63,7 +62,6 @@ const ReportePagosFundacion = () => {
 
     return (
         <Box>
-            {/* Filtros */}
             <Paper sx={{ p: 3, mb: 3 }}>
                 <Typography variant="h6" gutterBottom>Filtros de Búsqueda</Typography>
                 <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -104,7 +102,6 @@ const ReportePagosFundacion = () => {
                 </Grid>
             </Paper>
 
-            {/* Resultados */}
             {loading && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
                     <CircularProgress />
@@ -113,7 +110,6 @@ const ReportePagosFundacion = () => {
 
             {datosReporte && !loading && (
                 <>
-                    {/* Botones de exportación */}
                     <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
                         <Button
                             variant="contained"
@@ -140,12 +136,11 @@ const ReportePagosFundacion = () => {
                         </Button>
                     </Stack>
 
-                    {/* Vista previa del reporte */}
                     <Paper sx={{ p: 3 }} id="reporte-print">
                         <Box sx={{ textAlign: 'center', mb: 2 }}>
-                            <img
-                                src="/logo-asilo.png"
-                                alt="Logo Asilo"
+                            <img 
+                                src="/logo-asilo.png" 
+                                alt="Logo Asilo" 
                                 style={{ height: '60px', marginBottom: '10px' }}
                                 className="logo-print"
                                 onError={(e) => { e.target.style.display = 'none'; }}
@@ -184,7 +179,6 @@ const ReportePagosFundacion = () => {
                             </Table>
                         </TableContainer>
 
-                        {/* Resumen */}
                         <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
                             <Typography variant="h6" gutterBottom><strong>Resumen de Pagos</strong></Typography>
                             <Grid container spacing={2}>
@@ -206,7 +200,6 @@ const ReportePagosFundacion = () => {
                 </>
             )}
 
-            {/* Estilos para impresión */}
             <style>{`
                 @media print {
                     body * { visibility: hidden; }
@@ -217,10 +210,7 @@ const ReportePagosFundacion = () => {
                         top: 0;
                         width: 100%;
                     }
-                    .logo-print {
-                        display: block !important;
-                        margin: 0 auto 10px;
-                    }
+                    .logo-print { display: block !important; margin: 0 auto 10px; }
                     @page { margin: 2cm; }
                 }
             `}</style>

@@ -128,7 +128,6 @@ export const generarPDFCobros = (datos, familiar, fechaInicio, fechaFin) => {
 export const generarPDFPagosFundacion = (datos, fechaInicio, fechaFin) => {
     const doc = new jsPDF();
     
-    // Logo
     if (LOGO_BASE64 && LOGO_BASE64.length > 100) {
         try {
             doc.addImage(LOGO_BASE64, 'PNG', 92, 8, 25, 25);
@@ -137,7 +136,6 @@ export const generarPDFPagosFundacion = (datos, fechaInicio, fechaFin) => {
         }
     }
     
-    // Encabezado
     doc.setFontSize(16);
     doc.setFont(undefined, 'bold');
     doc.text('Asilo de Ancianos Cabeza de Algodón', 105, 38, { align: 'center' });
@@ -153,18 +151,17 @@ export const generarPDFPagosFundacion = (datos, fechaInicio, fechaFin) => {
     doc.text(`Período: ${formatearFecha(fechaInicio)} - ${formatearFecha(fechaFin)}`, 14, 57);
     doc.text(`Fecha de emisión: ${formatearFecha(new Date().toISOString().split('T')[0])}`, 14, 63);
     
-    // Tabla
-    const tableData = datos.transacciones.map(t => [
-        new Date(t.fecha).toLocaleDateString('es-GT'),
-        t.tipo,
-        t.descripcion,
-        t.nombre_familiar || t.nombre_donante || 'N/A',
-        `Q${parseFloat(t.monto).toFixed(2)}`
+    const tableData = datos.pagos.map(p => [
+        new Date(p.fecha).toLocaleDateString('es-GT'),
+        p.nombre_familiar,
+        p.telefono_familiar,
+        p.descripcion,
+        `Q${parseFloat(p.monto).toFixed(2)}`
     ]);
     
     autoTable(doc, {
         startY: 69,
-        head: [['Fecha', 'Tipo', 'Descripción', 'Familiar/Donante', 'Monto']],
+        head: [['Fecha', 'Familiar', 'Teléfono', 'Concepto', 'Monto Pagado']],
         body: tableData,
         theme: 'striped',
         headStyles: { 
@@ -177,38 +174,37 @@ export const generarPDFPagosFundacion = (datos, fechaInicio, fechaFin) => {
         styles: { fontSize: 8, cellPadding: 3 },
         columnStyles: {
             0: { cellWidth: 25 },
-            1: { cellWidth: 35 },
-            2: { cellWidth: 60 },
-            3: { cellWidth: 40 },
+            1: { cellWidth: 45 },
+            2: { cellWidth: 30 },
+            3: { cellWidth: 55 },
             4: { cellWidth: 25, halign: 'right' }
         }
     });
     
-    // Resumen
     const finalY = doc.lastAutoTable.finalY + 10;
     
     doc.setFillColor(240, 240, 240);
-    doc.rect(14, finalY, 182, 30, 'F');
+    doc.rect(14, finalY, 182, 25, 'F');
     
     doc.setFont(undefined, 'bold');
     doc.setFontSize(12);
     doc.setTextColor(46, 125, 50);
-    doc.text('Resumen', 20, finalY + 8);
+    doc.text('Resumen de Pagos', 20, finalY + 8);
     
     doc.setFont(undefined, 'normal');
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
     
-    doc.text('Total Pagos:', 20, finalY + 16);
-    doc.text(`Q${datos.totalPagos}`, 65, finalY + 16);
-    
-    doc.text('Total Ingresos:', 20, finalY + 23);
-    doc.text(`Q${datos.totalIngresos}`, 65, finalY + 23);
-    
+    doc.text('Total Pagado:', 20, finalY + 17);
     doc.setFont(undefined, 'bold');
-    doc.text('Total General:', 110, finalY + 20);
     doc.setTextColor(46, 125, 50);
-    doc.text(`Q${datos.totalGeneral}`, 160, finalY + 20);
+    doc.text(`Q${datos.totalPagos}`, 70, finalY + 17);
+    
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(0, 0, 0);
+    doc.text('Cantidad de Pagos:', 110, finalY + 17);
+    doc.setFont(undefined, 'bold');
+    doc.text(`${datos.cantidadPagos}`, 165, finalY + 17);
     
     doc.setFontSize(8);
     doc.setTextColor(128, 128, 128);

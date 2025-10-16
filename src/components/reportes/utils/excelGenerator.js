@@ -74,23 +74,21 @@ export const generarExcelPagosFundacion = (datos, fechaInicio, fechaFin) => {
         []
     ];
     
-    const tableHeaders = [['Fecha', 'Tipo', 'Descripción', 'Familiar/Donante', 'Monto']];
+    const tableHeaders = [['Fecha', 'Familiar', 'Teléfono', 'Concepto', 'Monto Pagado']];
     
-    const tableData = datos.transacciones.map(t => [
-        new Date(t.fecha).toLocaleDateString('es-GT'),
-        t.tipo,
-        t.descripcion,
-        t.nombre_familiar || t.nombre_donante || 'N/A',
-        parseFloat(t.monto).toFixed(2)
+    const tableData = datos.pagos.map(p => [
+        new Date(p.fecha).toLocaleDateString('es-GT'),
+        p.nombre_familiar,
+        p.telefono_familiar,
+        p.descripcion,
+        parseFloat(p.monto).toFixed(2)
     ]);
     
     const resumen = [
         [],
-        ['Resumen'],
-        ['Total Pagos', datos.totalPagos],
-        ['Total Ingresos', datos.totalIngresos],
-        ['Total General', datos.totalGeneral],
-        ['Cantidad de Transacciones', datos.cantidadTransacciones]
+        ['Resumen de Pagos'],
+        ['Total Pagado', datos.totalPagos],
+        ['Cantidad de Pagos', datos.cantidadPagos]
     ];
     
     const wsData = [...header, ...tableHeaders, ...tableData, ...resumen];
@@ -98,9 +96,9 @@ export const generarExcelPagosFundacion = (datos, fechaInicio, fechaFin) => {
     
     ws['!cols'] = [
         { wch: 12 },
-        { wch: 25 },
-        { wch: 50 },
         { wch: 30 },
+        { wch: 15 },
+        { wch: 50 },
         { wch: 15 }
     ];
     
