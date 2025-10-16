@@ -162,3 +162,49 @@ export const generarExcelEntradas = (datos, fechaInicio, fechaFin) => {
     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     saveAs(data, `Reporte_Entradas_${new Date().toISOString().split('T')[0]}.xlsx`);
 };
+
+export const generarExcelExamenes = (datos, fechaInicio, fechaFin) => {
+    const header = [
+        ['Asilo de Ancianos Cabeza de Algodón'],
+        ['Reporte de Exámenes Médicos por Paciente'],
+        [],
+        [`Paciente: ${datos.paciente.nombre}`],
+        [`Período: ${new Date(fechaInicio).toLocaleDateString('es-GT')} - ${new Date(fechaFin).toLocaleDateString('es-GT')}`],
+        [`Fecha de emisión: ${new Date().toLocaleDateString('es-GT')}`],
+        []
+    ];
+    
+    const tableHeaders = [['Fecha', 'Examen', 'Resultado', 'Médico', 'Diagnóstico']];
+    
+    const tableData = datos.examenes.map(ex => [
+        new Date(ex.fecha_visita).toLocaleDateString('es-GT'),
+        ex.nombre_examen,
+        ex.resultado || 'Pendiente',
+        ex.nombre_medico || 'N/A',
+        ex.diagnostico || '-'
+    ]);
+    
+    const resumen = [
+        [],
+        ['Resumen'],
+        ['Total de Exámenes Realizados', datos.totalExamenes]
+    ];
+    
+    const wsData = [...header, ...tableHeaders, ...tableData, ...resumen];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    
+    ws['!cols'] = [
+        { wch: 12 },
+        { wch: 35 },
+        { wch: 40 },
+        { wch: 30 },
+        { wch: 50 }
+    ];
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Exámenes');
+    
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(data, `Reporte_Examenes_${datos.paciente.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
+};

@@ -308,3 +308,82 @@ export const generarPDFEntradas = (datos, fechaInicio, fechaFin) => {
     
     doc.save(`Reporte_Entradas_${new Date().toISOString().split('T')[0]}.pdf`);
 };
+
+export const generarPDFExamenes = (datos, fechaInicio, fechaFin) => {
+    const doc = new jsPDF();
+    
+    if (LOGO_BASE64 && LOGO_BASE64.length > 100) {
+        try {
+            doc.addImage(LOGO_BASE64, 'PNG', 92, 8, 25, 25);
+        } catch (error) {
+            console.warn('No se pudo agregar el logo:', error);
+        }
+    }
+    
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text('Asilo de Ancianos Cabeza de Algodón', 105, 38, { align: 'center' });
+    
+    doc.setFontSize(13);
+    doc.text('Reporte de Exámenes Médicos por Paciente', 105, 45, { align: 'center' });
+    
+    doc.setLineWidth(0.5);
+    doc.line(14, 50, 196, 50);
+    
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Paciente: ${datos.paciente.nombre}`, 14, 57);
+    doc.text(`Período: ${formatearFecha(fechaInicio)} - ${formatearFecha(fechaFin)}`, 14, 63);
+    doc.text(`Fecha de emisión: ${formatearFecha(new Date().toISOString().split('T')[0])}`, 14, 69);
+    
+    const tableData = datos.examenes.map(ex => [
+        new Date(ex.fecha_visita).toLocaleDateString('es-GT'),
+        ex.nombre_examen,
+        ex.resultado || 'Pendiente',
+        ex.nombre_medico || 'N/A',
+        ex.diagnostico || '-'
+    ]);
+    
+    autoTable(doc, {
+        startY: 75,
+        head: [['Fecha', 'Examen', 'Resultado', 'Médico', 'Diagnóstico']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: { 
+            fillColor: [46, 125, 50],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            halign: 'center',
+            fontSize: 9
+        },
+        styles: { fontSize: 8, cellPadding: 3 },
+        columnStyles: {
+            0: { cellWidth: 25 },
+            1: { cellWidth: 40 },
+            2: { cellWidth: 40 },
+            3: { cellWidth: 35 },
+            4: { cellWidth: 45 }
+        }
+    });
+    
+    const finalY = doc.lastAutoTable.finalY + 10;
+    
+    doc.setFillColor(240, 240, 240);
+    doc.rect(14, finalY, 182, 20, 'F');
+    
+    doc.setFont(undefined, 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(46, 125, 50);
+    doc.text('Resumen', 20, finalY + 8);
+    
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Total de Exámenes Realizados: ${datos.totalExamenes}`, 20, finalY + 15);
+    
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.text('Documento generado electrónicamente', 105, 285, { align: 'center' });
+    
+    doc.save(`Reporte_Examenes_${datos.paciente.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+};
