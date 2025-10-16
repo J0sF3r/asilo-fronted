@@ -1,19 +1,19 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-// ✅ Agrega tu logo en Base64 aquí (reemplaza con tu logo real)
-const LOGO_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP4z8AAAAMBAQD3A0FDAAAAAElFTkSuQmCC';
-// ☝️ REEMPLAZA ESTO CON TU LOGO EN BASE64
+// ✅ Logo en Base64 - REEMPLAZA CON TU LOGO REAL
+// Para convertir tu logo: https://base64.guru/converter/encode/image
+const LOGO_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzJlN2QzMiIvPjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1zaXplPSI0MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCI+QTwvdGV4dD48L3N2Zz4=';
 
 export const generarPDFCobros = (datos, familiar, fechaInicio, fechaFin) => {
     const doc = new jsPDF();
     
-    // Agregar logo
+    // Agregar logo si existe
     if (LOGO_BASE64 && LOGO_BASE64.length > 100) {
         try {
             doc.addImage(LOGO_BASE64, 'PNG', 14, 10, 30, 30);
         } catch (error) {
-            console.error('Error al agregar logo:', error);
+            console.warn('No se pudo agregar el logo:', error);
         }
     }
     
@@ -36,7 +36,7 @@ export const generarPDFCobros = (datos, familiar, fechaInicio, fechaFin) => {
     doc.text(`Período: ${new Date(fechaInicio).toLocaleDateString('es-GT')} - ${new Date(fechaFin).toLocaleDateString('es-GT')}`, 14, 46);
     doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-GT')}`, 14, 52);
     
-    // Tabla
+    // Preparar datos de la tabla
     const tableData = datos.transacciones.map(t => [
         new Date(t.fecha).toLocaleDateString('es-GT'),
         t.tipo,
@@ -47,6 +47,7 @@ export const generarPDFCobros = (datos, familiar, fechaInicio, fechaFin) => {
         t.estado_pago || '-'
     ]);
     
+    // Generar tabla
     autoTable(doc, {
         startY: 58,
         head: [['Fecha', 'Tipo', 'Descripción', 'Monto Original', 'Desc.', 'Monto Final', 'Estado']],
@@ -56,7 +57,8 @@ export const generarPDFCobros = (datos, familiar, fechaInicio, fechaFin) => {
             fillColor: [46, 125, 50],
             textColor: [255, 255, 255],
             fontStyle: 'bold',
-            halign: 'center'
+            halign: 'center',
+            fontSize: 9
         },
         styles: { 
             fontSize: 8,
@@ -70,12 +72,14 @@ export const generarPDFCobros = (datos, familiar, fechaInicio, fechaFin) => {
             4: { cellWidth: 15, halign: 'center' },
             5: { cellWidth: 23, halign: 'right' },
             6: { cellWidth: 20, halign: 'center' }
-        }
+        },
+        alternateRowStyles: { fillColor: [245, 245, 245] }
     });
     
-    // Resumen
-    const finalY = doc.previousAutoTable.finalY + 10;
+    // ✅ CORRECCIÓN: Usar lastAutoTable en lugar de previousAutoTable
+    const finalY = doc.lastAutoTable.finalY + 10;
     
+    // Resumen
     doc.setFillColor(240, 240, 240);
     doc.rect(14, finalY, 182, 35, 'F');
     
@@ -111,5 +115,6 @@ export const generarPDFCobros = (datos, familiar, fechaInicio, fechaFin) => {
     doc.text('Documento generado electrónicamente', 105, 285, { align: 'center' });
     
     // Guardar
-    doc.save(`Reporte_Cobros_${familiar.nombre.replace(/\s+/g, '_')}.pdf`);
+    const nombreArchivo = `Reporte_Cobros_${familiar.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(nombreArchivo);
 };
