@@ -153,15 +153,17 @@ export const generarPDFPagosFundacion = (datos, fechaInicio, fechaFin) => {
     
     const tableData = datos.pagos.map(p => [
         new Date(p.fecha).toLocaleDateString('es-GT'),
+        p.tipo,
         p.nombre_familiar,
-        p.telefono_familiar,
         p.descripcion,
+        `Q${parseFloat(p.monto_original || p.monto).toFixed(2)}`,
+        p.descuento_aplicado ? `${p.descuento_aplicado}%` : '-',
         `Q${parseFloat(p.monto).toFixed(2)}`
     ]);
     
     autoTable(doc, {
         startY: 69,
-        head: [['Fecha', 'Familiar', 'Teléfono', 'Concepto', 'Monto Pagado']],
+        head: [['Fecha', 'Tipo', 'Familiar', 'Descripción', 'Original', 'Desc.', 'Pagado']],
         body: tableData,
         theme: 'striped',
         headStyles: { 
@@ -169,15 +171,17 @@ export const generarPDFPagosFundacion = (datos, fechaInicio, fechaFin) => {
             textColor: [255, 255, 255],
             fontStyle: 'bold',
             halign: 'center',
-            fontSize: 9
+            fontSize: 8
         },
-        styles: { fontSize: 8, cellPadding: 3 },
+        styles: { fontSize: 7, cellPadding: 2 },
         columnStyles: {
-            0: { cellWidth: 25 },
-            1: { cellWidth: 45 },
-            2: { cellWidth: 30 },
-            3: { cellWidth: 55 },
-            4: { cellWidth: 25, halign: 'right' }
+            0: { cellWidth: 22 },
+            1: { cellWidth: 30 },
+            2: { cellWidth: 35 },
+            3: { cellWidth: 45 },
+            4: { cellWidth: 20, halign: 'right' },
+            5: { cellWidth: 13, halign: 'center' },
+            6: { cellWidth: 20, halign: 'right' }
         }
     });
     
@@ -213,7 +217,6 @@ export const generarPDFPagosFundacion = (datos, fechaInicio, fechaFin) => {
     
     doc.save(`Reporte_Pagos_Fundacion_${new Date().toISOString().split('T')[0]}.pdf`);
 };
-
 export const generarPDFEntradas = (datos, fechaInicio, fechaFin) => {
     const doc = new jsPDF();
     

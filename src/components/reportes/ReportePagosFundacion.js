@@ -138,9 +138,9 @@ const ReportePagosFundacion = () => {
 
                     <Paper sx={{ p: 3 }} id="reporte-print">
                         <Box sx={{ textAlign: 'center', mb: 2 }}>
-                            <img 
-                                src="/logo-asilo.png" 
-                                alt="Logo Asilo" 
+                            <img
+                                src="/logo-asilo.png"
+                                alt="Logo Asilo"
                                 style={{ height: '60px', marginBottom: '10px' }}
                                 className="logo-print"
                                 onError={(e) => { e.target.style.display = 'none'; }}
@@ -159,9 +159,11 @@ const ReportePagosFundacion = () => {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell><strong>Fecha</strong></TableCell>
+                                        <TableCell><strong>Tipo</strong></TableCell>
                                         <TableCell><strong>Familiar</strong></TableCell>
-                                        <TableCell><strong>Teléfono</strong></TableCell>
-                                        <TableCell><strong>Concepto</strong></TableCell>
+                                        <TableCell><strong>Descripción</strong></TableCell>
+                                        <TableCell align="right"><strong>Monto Original</strong></TableCell>
+                                        <TableCell align="center"><strong>Descuento</strong></TableCell>
                                         <TableCell align="right"><strong>Monto Pagado</strong></TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -169,9 +171,19 @@ const ReportePagosFundacion = () => {
                                     {datosReporte.pagos.map((p, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{new Date(p.fecha).toLocaleDateString('es-GT')}</TableCell>
+                                            <TableCell>
+                                                <Chip
+                                                    label={p.tipo}
+                                                    color="success"
+                                                    size="small"
+                                                />
+                                            </TableCell>
                                             <TableCell>{p.nombre_familiar}</TableCell>
-                                            <TableCell>{p.telefono_familiar}</TableCell>
                                             <TableCell>{p.descripcion}</TableCell>
+                                            <TableCell align="right">{formatCurrency(p.monto_original || p.monto)}</TableCell>
+                                            <TableCell align="center">
+                                                {p.descuento_aplicado ? `${p.descuento_aplicado}%` : '-'}
+                                            </TableCell>
                                             <TableCell align="right">{formatCurrency(p.monto)}</TableCell>
                                         </TableRow>
                                     ))}

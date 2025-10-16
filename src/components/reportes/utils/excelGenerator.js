@@ -74,13 +74,15 @@ export const generarExcelPagosFundacion = (datos, fechaInicio, fechaFin) => {
         []
     ];
     
-    const tableHeaders = [['Fecha', 'Familiar', 'Teléfono', 'Concepto', 'Monto Pagado']];
+    const tableHeaders = [['Fecha', 'Tipo', 'Familiar', 'Descripción', 'Monto Original', 'Descuento (%)', 'Monto Pagado']];
     
     const tableData = datos.pagos.map(p => [
         new Date(p.fecha).toLocaleDateString('es-GT'),
+        p.tipo,
         p.nombre_familiar,
-        p.telefono_familiar,
         p.descripcion,
+        parseFloat(p.monto_original || p.monto).toFixed(2),
+        p.descuento_aplicado || 0,
         parseFloat(p.monto).toFixed(2)
     ]);
     
@@ -96,9 +98,11 @@ export const generarExcelPagosFundacion = (datos, fechaInicio, fechaFin) => {
     
     ws['!cols'] = [
         { wch: 12 },
+        { wch: 25 },
         { wch: 30 },
-        { wch: 15 },
         { wch: 50 },
+        { wch: 15 },
+        { wch: 12 },
         { wch: 15 }
     ];
     
@@ -109,6 +113,7 @@ export const generarExcelPagosFundacion = (datos, fechaInicio, fechaFin) => {
     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     saveAs(data, `Reporte_Pagos_Fundacion_${new Date().toISOString().split('T')[0]}.xlsx`);
 };
+
 
 export const generarExcelEntradas = (datos, fechaInicio, fechaFin) => {
     const header = [
