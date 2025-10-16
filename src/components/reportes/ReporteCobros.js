@@ -270,21 +270,33 @@ const ReporteCobros = () => {
 
             {/* Estilos para impresión */}
             <style>{`
-                @media print {
-                    body * {
-                        visibility: hidden;
+                    @media print {
+                        body * {
+                            visibility: hidden;
+                        }
+                        #reporte-print, #reporte-print * {
+                            visibility: visible;
+                        }
+                        #reporte-print {
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            width: 100%;
+                        }
+                        .logo-print {
+                            display: block !important;
+                            margin: 0 auto 10px;
+                        }
+                        @page {
+                            margin: 2cm;
+                        }
                     }
-                    #reporte-print, #reporte-print * {
-                        visibility: visible;
+                    @media screen {
+                        .logo-print {
+                            display: block;
+                        }
                     }
-                    #reporte-print {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 100%;
-                    }
-                }
-            `}</style>
+                `}</style>
         </Box>
     );
 };
