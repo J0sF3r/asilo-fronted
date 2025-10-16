@@ -176,10 +176,21 @@ const ReporteCobros = () => {
                         {/* ✅ AGREGAR LOGO AQUÍ */}
                         <Box sx={{ textAlign: 'center', mb: 2 }}>
                             <img
-                                src="/assets/logo-asilo.png"
+                                src="/logo-asilo.png"
                                 alt="Logo Asilo"
-                                style={{ height: '60px', marginBottom: '10px' }}
+                                style={{
+                                    height: '60px',
+                                    width: 'auto',
+                                    marginBottom: '10px',
+                                    display: 'block',
+                                    marginLeft: 'auto',
+                                    marginRight: 'auto'
+                                }}
                                 className="logo-print"
+                                onError={(e) => {
+                                    e.target.style.display = 'none'; // Ocultar si no carga
+                                    console.warn('Logo no encontrado en /public/logo-asilo.png');
+                                }}
                             />
                             <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
                                 Asilo de Ancianos Cabeza de Algodón
@@ -269,34 +280,62 @@ const ReporteCobros = () => {
             )}
 
             {/* Estilos para impresión */}
-            <style>{`
-                    @media print {
-                        body * {
-                            visibility: hidden;
-                        }
-                        #reporte-print, #reporte-print * {
-                            visibility: visible;
-                        }
-                        #reporte-print {
-                            position: absolute;
-                            left: 0;
-                            top: 0;
-                            width: 100%;
-                        }
-                        .logo-print {
-                            display: block !important;
-                            margin: 0 auto 10px;
-                        }
-                        @page {
-                            margin: 2cm;
-                        }
+           <style>{`
+                @media print {
+                    /* Ocultar todo excepto el reporte */
+                    body * {
+                        visibility: hidden;
                     }
-                    @media screen {
-                        .logo-print {
-                            display: block;
-                        }
+                    
+                    #reporte-print, #reporte-print * {
+                        visibility: visible;
                     }
-                `}</style>
+                    
+                    #reporte-print {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        padding: 20px;
+                    }
+                    
+                    /* Asegurar que el logo se imprima */
+                    .logo-print {
+                        display: block !important;
+                        margin: 0 auto 15px !important;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    
+                    /* Configuración de página */
+                    @page {
+                        margin: 1.5cm;
+                        size: letter;
+                    }
+                    
+                    /* Ajustar tabla para impresión */
+                    table {
+                        page-break-inside: auto;
+                    }
+                    
+                    tr {
+                        page-break-inside: avoid;
+                        page-break-after: auto;
+                    }
+                    
+                    /* Mantener colores en impresión */
+                    * {
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                }
+                
+                @media screen {
+                    .logo-print {
+                        display: block;
+                    }
+                }
+            `}</style>
         </Box>
     );
 };
