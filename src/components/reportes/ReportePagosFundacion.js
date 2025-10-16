@@ -143,9 +143,9 @@ const ReportePagosFundacion = () => {
                     {/* Vista previa del reporte */}
                     <Paper sx={{ p: 3 }} id="reporte-print">
                         <Box sx={{ textAlign: 'center', mb: 2 }}>
-                            <img 
-                                src="/logo-asilo.png" 
-                                alt="Logo Asilo" 
+                            <img
+                                src="/logo-asilo.png"
+                                alt="Logo Asilo"
                                 style={{ height: '60px', marginBottom: '10px' }}
                                 className="logo-print"
                                 onError={(e) => { e.target.style.display = 'none'; }}
@@ -164,26 +164,20 @@ const ReportePagosFundacion = () => {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell><strong>Fecha</strong></TableCell>
-                                        <TableCell><strong>Tipo</strong></TableCell>
-                                        <TableCell><strong>Descripción</strong></TableCell>
-                                        <TableCell><strong>Familiar/Donante</strong></TableCell>
-                                        <TableCell align="right"><strong>Monto</strong></TableCell>
+                                        <TableCell><strong>Familiar</strong></TableCell>
+                                        <TableCell><strong>Teléfono</strong></TableCell>
+                                        <TableCell><strong>Concepto</strong></TableCell>
+                                        <TableCell align="right"><strong>Monto Pagado</strong></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {datosReporte.transacciones.map((t, index) => (
+                                    {datosReporte.pagos.map((p, index) => (
                                         <TableRow key={index}>
-                                            <TableCell>{new Date(t.fecha).toLocaleDateString('es-GT')}</TableCell>
-                                            <TableCell>
-                                                <Chip 
-                                                    label={t.tipo} 
-                                                    color={t.tipo === 'Pago' ? 'success' : 'primary'} 
-                                                    size="small" 
-                                                />
-                                            </TableCell>
-                                            <TableCell>{t.descripcion}</TableCell>
-                                            <TableCell>{t.nombre_familiar || t.nombre_donante || 'N/A'}</TableCell>
-                                            <TableCell align="right">{formatCurrency(t.monto)}</TableCell>
+                                            <TableCell>{new Date(p.fecha).toLocaleDateString('es-GT')}</TableCell>
+                                            <TableCell>{p.nombre_familiar}</TableCell>
+                                            <TableCell>{p.telefono_familiar}</TableCell>
+                                            <TableCell>{p.descripcion}</TableCell>
+                                            <TableCell align="right">{formatCurrency(p.monto)}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -192,30 +186,18 @@ const ReportePagosFundacion = () => {
 
                         {/* Resumen */}
                         <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
-                            <Typography variant="h6" gutterBottom><strong>Resumen</strong></Typography>
+                            <Typography variant="h6" gutterBottom><strong>Resumen de Pagos</strong></Typography>
                             <Grid container spacing={2}>
-                                <Grid item xs={6} sm={3}>
-                                    <Typography variant="body2" color="text.secondary">Total Pagos:</Typography>
+                                <Grid item xs={6}>
+                                    <Typography variant="body2" color="text.secondary">Total Pagado:</Typography>
                                     <Typography variant="h6" color="success.main">
                                         {formatCurrency(datosReporte.totalPagos)}
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={6} sm={3}>
-                                    <Typography variant="body2" color="text.secondary">Total Ingresos:</Typography>
-                                    <Typography variant="h6" color="primary.main">
-                                        {formatCurrency(datosReporte.totalIngresos)}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6} sm={3}>
-                                    <Typography variant="body2" color="text.secondary">Total General:</Typography>
-                                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                        {formatCurrency(datosReporte.totalGeneral)}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6} sm={3}>
-                                    <Typography variant="body2" color="text.secondary">Transacciones:</Typography>
+                                <Grid item xs={6}>
+                                    <Typography variant="body2" color="text.secondary">Cantidad de Pagos:</Typography>
                                     <Typography variant="h6">
-                                        {datosReporte.cantidadTransacciones}
+                                        {datosReporte.cantidadPagos}
                                     </Typography>
                                 </Grid>
                             </Grid>
