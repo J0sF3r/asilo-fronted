@@ -208,3 +208,53 @@ export const generarExcelExamenes = (datos, fechaInicio, fechaFin) => {
     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     saveAs(data, `Reporte_Examenes_${datos.paciente.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
 };
+
+export const generarExcelMedicamentos = (datos, fechaInicio, fechaFin) => {
+    const header = [
+        ['Asilo de Ancianos Cabeza de Algodón'],
+        ['Reporte de Medicamentos Aplicados por Paciente'],
+        [],
+        [`Paciente: ${datos.paciente.nombre}`],
+        [`Período: ${new Date(fechaInicio).toLocaleDateString('es-GT')} - ${new Date(fechaFin).toLocaleDateString('es-GT')}`],
+        [`Fecha de emisión: ${new Date().toLocaleDateString('es-GT')}`],
+        []
+    ];
+    
+    const tableHeaders = [['Fecha', 'Medicamento', 'Tipo', 'Dosis', 'Frecuencia', 'Enfermero', 'Observaciones']];
+    
+    const tableData = datos.medicamentos.map(med => [
+        new Date(med.fecha_aplicacion).toLocaleDateString('es-GT'),
+        med.nombre_medicamento,
+        med.tipo,
+        med.dosis,
+        med.frecuencia,
+        med.nombre_enfermero || 'N/A',
+        med.observaciones || '-'
+    ]);
+    
+    const resumen = [
+        [],
+        ['Resumen'],
+        ['Total de Aplicaciones de Medicamentos', datos.totalAplicaciones]
+    ];
+    
+    const wsData = [...header, ...tableHeaders, ...tableData, ...resumen];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    
+    ws['!cols'] = [
+        { wch: 12 },
+        { wch: 30 },
+        { wch: 20 },
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 25 },
+        { wch: 40 }
+    ];
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Medicamentos');
+    
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(data, `Reporte_Medicamentos_${datos.paciente.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
+};
