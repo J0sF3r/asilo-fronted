@@ -191,23 +191,31 @@ const ReporteMedicamentos = () => {
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell><strong>Fecha</strong></TableCell>
+                                        <TableCell><strong>Fecha Entrega</strong></TableCell>
                                         <TableCell><strong>Medicamento</strong></TableCell>
-                                        <TableCell><strong>Dosis</strong></TableCell>
-                                        <TableCell><strong>Frecuencia</strong></TableCell>
-                                        <TableCell><strong>Enfermero</strong></TableCell>
-                                        <TableCell><strong>Observaciones</strong></TableCell>
+                                        <TableCell><strong>Cantidad</strong></TableCell>
+                                        <TableCell><strong>Tiempo Aplicación</strong></TableCell>
+                                        <TableCell><strong>Estado</strong></TableCell>
+                                        <TableCell><strong>Médico</strong></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {datosReporte.medicamentos.map((med, index) => (
                                         <TableRow key={index}>
-                                            <TableCell>{new Date(med.fecha_aplicacion).toLocaleDateString('es-GT')}</TableCell>
-                                            <TableCell>{med.nombre_medicamento}</TableCell>
-                                            <TableCell>{med.dosis}</TableCell>
-                                            <TableCell>{med.frecuencia}</TableCell>
-                                            <TableCell>{med.nombre_enfermero || 'N/A'}</TableCell>
-                                            <TableCell>{med.observaciones || '-'}</TableCell>
+                                            <TableCell>
+                                                {med.fecha_entrega ? new Date(med.fecha_entrega).toLocaleDateString('es-GT') : 'N/A'}
+                                            </TableCell>
+                                            <TableCell>{med.nombre_medicamento || 'N/A'}</TableCell>
+                                            <TableCell>{med.cantidad || '-'}</TableCell>
+                                            <TableCell>{med.tiempo_aplicacion || 'N/A'}</TableCell>
+                                            <TableCell>
+                                                <Chip 
+                                                    label={med.estado || 'Pendiente'} 
+                                                    color={med.estado === 'Entregado' ? 'success' : 'warning'} 
+                                                    size="small" 
+                                                />
+                                            </TableCell>
+                                            <TableCell>{med.nombre_medico || 'N/A'}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
