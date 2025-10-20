@@ -37,28 +37,38 @@ const ReporteMedicamentos = () => {
         }
     };
 
-    const generarReporte = async () => {
-        if (!selectedPaciente || !fechaInicio || !fechaFin) {
-            alert('Por favor complete todos los campos');
-            return;
-        }
+const generarReporte = async () => {
+    if (!selectedPaciente || !fechaInicio || !fechaFin) {
+        alert('Por favor complete todos los campos');
+        return;
+    }
 
-        setLoading(true);
-        try {
-            const res = await api.get(`/reportes/medicamentos/${selectedPaciente}`, {
-                params: { 
-                    fechaInicio: fechaInicio,
-                    fechaFin: fechaFin
-                }
-            });
-            setDatosReporte(res.data);
-        } catch (err) {
-            console.error('Error al generar reporte:', err);
-            alert('No se pudo generar el reporte');
-        } finally {
-            setLoading(false);
+    setLoading(true);
+    try {
+        const res = await api.get(`/reportes/medicamentos/${selectedPaciente}`, {
+            params: { 
+                fechaInicio: fechaInicio,
+                fechaFin: fechaFin
+            }
+        });
+        
+        // ✅ DEBUG: Ver qué llega del backend
+        console.log('=== DATOS RECIBIDOS DEL BACKEND ===');
+        console.log('Datos completos:', res.data);
+        console.log('Total medicamentos:', res.data.medicamentos.length);
+        if (res.data.medicamentos.length > 0) {
+            console.log('Primer medicamento:', res.data.medicamentos[0]);
+            console.log('Propiedades disponibles:', Object.keys(res.data.medicamentos[0]));
         }
-    };
+        
+        setDatosReporte(res.data);
+    } catch (err) {
+        console.error('Error al generar reporte:', err);
+        alert('No se pudo generar el reporte');
+    } finally {
+        setLoading(false);
+    }
+};
 
     const handleExportarPDF = () => {
         if (!datosReporte) return;
