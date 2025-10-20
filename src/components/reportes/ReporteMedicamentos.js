@@ -52,15 +52,6 @@ const generarReporte = async () => {
             }
         });
         
-        // ✅ DEBUG: Ver qué llega del backend
-        console.log('=== DATOS RECIBIDOS DEL BACKEND ===');
-        console.log('Datos completos:', res.data);
-        console.log('Total medicamentos:', res.data.medicamentos.length);
-        if (res.data.medicamentos.length > 0) {
-            console.log('Primer medicamento:', res.data.medicamentos[0]);
-            console.log('Propiedades disponibles:', Object.keys(res.data.medicamentos[0]));
-        }
-        
         setDatosReporte(res.data);
     } catch (err) {
         console.error('Error al generar reporte:', err);
