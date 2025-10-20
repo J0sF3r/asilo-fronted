@@ -23,8 +23,8 @@ const ReporteExamenes = () => {
     useEffect(() => {
         fetchPacientes();
         const hoy = new Date();
-        const haceUnAno = new Date(hoy.getFullYear() - 1, hoy.getMonth(), hoy.getDate());
-        setFechaInicio(haceUnAno.toISOString().split('T')[0]);
+        const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+        setFechaInicio(primerDiaMes.toISOString().split('T')[0]);
         setFechaFin(hoy.toISOString().split('T')[0]);
     }, []);
 
