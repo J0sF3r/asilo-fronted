@@ -220,16 +220,16 @@ export const generarExcelMedicamentos = (datos, fechaInicio, fechaFin) => {
         []
     ];
     
-    const tableHeaders = [['Fecha', 'Medicamento', 'Tipo', 'Dosis', 'Frecuencia', 'Enfermero', 'Observaciones']];
+    const tableHeaders = [['Fecha', 'Medicamento', 'Descripción', 'Cantidad', 'Tiempo Aplicación', 'Estado', 'Médico']];
     
     const tableData = datos.medicamentos.map(med => [
-        new Date(med.fecha_aplicacion).toLocaleDateString('es-GT'),
+        new Date(med.fecha_entrega).toLocaleDateString('es-GT'),
         med.nombre_medicamento,
-        med.tipo,
-        med.dosis,
-        med.frecuencia,
-        med.nombre_enfermero || 'N/A',
-        med.observaciones || '-'
+        med.descripcion || '-',
+        med.cantidad,
+        med.tiempo_aplicacion || 'N/A',
+        med.estado,
+        med.nombre_medico || 'N/A'
     ]);
     
     const resumen = [
@@ -243,12 +243,12 @@ export const generarExcelMedicamentos = (datos, fechaInicio, fechaFin) => {
     
     ws['!cols'] = [
         { wch: 12 },
-        { wch: 30 },
+        { wch: 35 },
+        { wch: 40 },
+        { wch: 12 },
         { wch: 20 },
         { wch: 15 },
-        { wch: 20 },
-        { wch: 25 },
-        { wch: 40 }
+        { wch: 25 }
     ];
     
     const wb = XLSX.utils.book_new();

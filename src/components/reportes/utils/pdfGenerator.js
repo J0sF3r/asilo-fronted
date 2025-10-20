@@ -387,7 +387,6 @@ export const generarPDFExamenes = (datos, fechaInicio, fechaFin) => {
     
     doc.save(`Reporte_Examenes_${datos.paciente.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
 };
-
 export const generarPDFMedicamentos = (datos, fechaInicio, fechaFin) => {
     const doc = new jsPDF();
     
@@ -416,18 +415,17 @@ export const generarPDFMedicamentos = (datos, fechaInicio, fechaFin) => {
     doc.text(`Fecha de emisión: ${formatearFecha(new Date().toISOString().split('T')[0])}`, 14, 69);
     
     const tableData = datos.medicamentos.map(med => [
-        new Date(med.fecha_aplicacion).toLocaleDateString('es-GT'),
+        new Date(med.fecha_entrega).toLocaleDateString('es-GT'),
         med.nombre_medicamento,
-        med.tipo,
-        med.dosis,
-        med.frecuencia,
-        med.nombre_enfermero || 'N/A',
-        med.observaciones || '-'
+        med.cantidad.toString(),
+        med.tiempo_aplicacion || 'N/A',
+        med.estado,
+        med.nombre_medico || 'N/A'
     ]);
     
     autoTable(doc, {
         startY: 75,
-        head: [['Fecha', 'Medicamento', 'Tipo', 'Dosis', 'Frecuencia', 'Enfermero', 'Observaciones']],
+        head: [['Fecha', 'Medicamento', 'Cantidad', 'Tiempo Aplicación', 'Estado', 'Médico']],
         body: tableData,
         theme: 'striped',
         headStyles: { 
@@ -435,17 +433,16 @@ export const generarPDFMedicamentos = (datos, fechaInicio, fechaFin) => {
             textColor: [255, 255, 255],
             fontStyle: 'bold',
             halign: 'center',
-            fontSize: 8
+            fontSize: 9
         },
-        styles: { fontSize: 7, cellPadding: 2 },
+        styles: { fontSize: 8, cellPadding: 3 },
         columnStyles: {
-            0: { cellWidth: 20 },
-            1: { cellWidth: 35 },
-            2: { cellWidth: 25 },
-            3: { cellWidth: 20 },
+            0: { cellWidth: 25 },
+            1: { cellWidth: 50 },
+            2: { cellWidth: 20 },
+            3: { cellWidth: 35 },
             4: { cellWidth: 25 },
-            5: { cellWidth: 30 },
-            6: { cellWidth: 30 }
+            5: { cellWidth: 30 }
         }
     });
     

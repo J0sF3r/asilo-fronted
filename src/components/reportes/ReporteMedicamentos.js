@@ -74,17 +74,6 @@ const ReporteMedicamentos = () => {
         window.print();
     };
 
-    const getTipoColor = (tipo) => {
-        const colores = {
-            'Analgésico': 'primary',
-            'Antibiótico': 'success',
-            'Antiinflamatorio': 'warning',
-            'Vitamina': 'info',
-            'Suero': 'secondary'
-        };
-        return colores[tipo] || 'default';
-    };
-
     return (
         <Box>
             <Paper sx={{ p: 3, mb: 3 }}>
@@ -204,7 +193,6 @@ const ReporteMedicamentos = () => {
                                     <TableRow>
                                         <TableCell><strong>Fecha</strong></TableCell>
                                         <TableCell><strong>Medicamento</strong></TableCell>
-                                        <TableCell><strong>Tipo</strong></TableCell>
                                         <TableCell><strong>Dosis</strong></TableCell>
                                         <TableCell><strong>Frecuencia</strong></TableCell>
                                         <TableCell><strong>Enfermero</strong></TableCell>
@@ -216,13 +204,6 @@ const ReporteMedicamentos = () => {
                                         <TableRow key={index}>
                                             <TableCell>{new Date(med.fecha_aplicacion).toLocaleDateString('es-GT')}</TableCell>
                                             <TableCell>{med.nombre_medicamento}</TableCell>
-                                            <TableCell>
-                                                <Chip 
-                                                    label={med.tipo} 
-                                                    color={getTipoColor(med.tipo)} 
-                                                    size="small" 
-                                                />
-                                            </TableCell>
                                             <TableCell>{med.dosis}</TableCell>
                                             <TableCell>{med.frecuencia}</TableCell>
                                             <TableCell>{med.nombre_enfermero || 'N/A'}</TableCell>
