@@ -501,24 +501,27 @@ export const generarPDFCostosVisitas = (datos, fechaInicio, fechaFin) => {
     
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(9);
-    doc.text('Total Visitas:', 18, 82);
-    doc.text(String(datos.cantidadVisitas), 18, 88);
+    doc.text('Visitas:', 18, 80);
+    doc.text(String(datos.cantidadVisitas), 18, 86);
     
-    doc.text('Total Exámenes:', 60, 82);
-    doc.text(`Q${datos.totalExamenes}`, 60, 88);
+    doc.text('Consultas:', 50, 80);
+    doc.text(`Q${datos.totalConsultas}`, 50, 86);
     
-    doc.text('Total Medicamentos:', 105, 82);
-    doc.text(`Q${datos.totalMedicamentos}`, 105, 88);
+    doc.text('Exámenes:', 85, 80);
+    doc.text(`Q${datos.totalExamenes}`, 85, 86);
+    
+    doc.text('Medicamentos:', 120, 80);
+    doc.text(`Q${datos.totalMedicamentos}`, 120, 86);
     
     doc.setFont(undefined, 'bold');
-    doc.text('TOTAL GENERAL:', 150, 82);
-    doc.text(`Q${datos.totalGeneral}`, 150, 88);
+    doc.text('TOTAL:', 160, 80);
+    doc.text(`Q${datos.totalGeneral}`, 160, 86);
     
     let yPosition = 100;
     
     // Detalle por visita
     datos.visitas.forEach((visita, index) => {
-        if (yPosition > 250) {
+        if (yPosition > 240) {
             doc.addPage();
             yPosition = 20;
         }
@@ -539,6 +542,13 @@ export const generarPDFCostosVisitas = (datos, fechaInicio, fechaFin) => {
         doc.text(`Médico: ${visita.nombre_medico || 'N/A'}`, 16, yPosition);
         yPosition += 5;
         
+        // Consulta
+        doc.setFillColor(200, 230, 255);
+        doc.rect(16, yPosition, 164, 8, 'F');
+        doc.text('Consulta Médica:', 18, yPosition + 5);
+        doc.text(`Q${visita.costo_consulta.toFixed(2)}`, 160, yPosition + 5);
+        yPosition += 10;
+        
         // Exámenes
         if (visita.examenes.length > 0) {
             const examenesData = visita.examenes.map(ex => [
@@ -556,7 +566,7 @@ export const generarPDFCostosVisitas = (datos, fechaInicio, fechaFin) => {
                 styles: { fontSize: 7, cellPadding: 2 },
                 columnStyles: {
                     0: { cellWidth: 80 },
-                    1: { cellWidth: 60 },
+                    1: { cellWidth: 50 },
                     2: { cellWidth: 30, halign: 'right' }
                 },
                 margin: { left: 16 }
@@ -571,23 +581,19 @@ export const generarPDFCostosVisitas = (datos, fechaInicio, fechaFin) => {
         if (visita.medicamentos.length > 0) {
             const medicamentosData = visita.medicamentos.map(med => [
                 med.nombre_medicamento,
-                String(med.cantidad),
-                `Q${parseFloat(med.costo).toFixed(2)}`,
-                `Q${(med.costo * med.cantidad).toFixed(2)}`
+                `Q${parseFloat(med.costo).toFixed(2)}`
             ]);
             
             autoTable(doc, {
                 startY: yPosition,
-                head: [['Medicamento', 'Cant.', 'Costo Unit.', 'Subtotal']],
+                head: [['Medicamento', 'Costo']],
                 body: medicamentosData,
                 theme: 'grid',
                 headStyles: { fillColor: [33, 150, 243], fontSize: 8 },
                 styles: { fontSize: 7, cellPadding: 2 },
                 columnStyles: {
-                    0: { cellWidth: 80 },
-                    1: { cellWidth: 20, halign: 'center' },
-                    2: { cellWidth: 30, halign: 'right' },
-                    3: { cellWidth: 30, halign: 'right' }
+                    0: { cellWidth: 100 },
+                    1: { cellWidth: 30, halign: 'right' }
                 },
                 margin: { left: 16 }
             });
@@ -597,7 +603,7 @@ export const generarPDFCostosVisitas = (datos, fechaInicio, fechaFin) => {
             yPosition += 5;
         }
         
-        yPosition += 5;
+        yPosition += 3;
     });
     
     doc.setFontSize(8);
