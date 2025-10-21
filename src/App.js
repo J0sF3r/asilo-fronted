@@ -26,6 +26,7 @@ import CuotasPage from './pages/CuotasPage';
 import DonantesPage from './pages/DonantesPage';
 import ReportesPage from './pages/ReportesPage';
 
+
 import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 

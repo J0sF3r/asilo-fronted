@@ -9,6 +9,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TableViewIcon from '@mui/icons-material/TableView';
 import PrintIcon from '@mui/icons-material/Print';
 import CloseIcon from '@mui/icons-material/Close';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 // Importaremos los componentes de reportes individuales
 import ReporteCobros from '../components/reportes/ReporteCobros';
@@ -56,7 +57,15 @@ const ReportesPage = () => {
             descripcion: 'Registro de todos los medicamentos dispensados por paciente',
             icono: <AssessmentIcon sx={{ fontSize: 60, color: 'error.main' }} />,
             component: ReporteMedicamentos
+        },
+        {
+            id: 'costos-visitas',
+            titulo: 'Costos por Visita Médica',
+            descripcion: 'Análisis detallado de costos por cada visita: exámenes y medicamentos',
+            icono: <AttachMoneyIcon sx={{ fontSize: 60, color: 'secondary.main' }} />,
+            component: ReporteCostosVisitas
         }
+
     ];
 
     const handleOpenReporte = (reporte) => {
