@@ -270,6 +270,7 @@ export const generarExcelCostosVisitas = (datos, fechaInicio, fechaFin) => {
         [],
         ['RESUMEN GENERAL'],
         ['Total Visitas', datos.cantidadVisitas],
+        ['Total Consultas', parseFloat(datos.totalConsultas).toFixed(2)],
         ['Total Exámenes', parseFloat(datos.totalExamenes).toFixed(2)],
         ['Total Medicamentos', parseFloat(datos.totalMedicamentos).toFixed(2)],
         ['TOTAL GENERAL', parseFloat(datos.totalGeneral).toFixed(2)],
@@ -283,6 +284,11 @@ export const generarExcelCostosVisitas = (datos, fechaInicio, fechaFin) => {
         wsData.push([`VISITA ${index + 1} - ${new Date(visita.fecha_visita).toLocaleDateString('es-GT')}`]);
         wsData.push([`Médico: ${visita.nombre_medico || 'N/A'}`]);
         wsData.push([`Diagnóstico: ${visita.diagnostico || 'Sin diagnóstico'}`]);
+        wsData.push([]);
+        
+        // Consulta Médica
+        wsData.push(['CONSULTA MÉDICA']);
+        wsData.push([visita.desc_consulta, '', visita.costo_consulta.toFixed(2)]);
         wsData.push([]);
         
         // Exámenes
@@ -299,20 +305,22 @@ export const generarExcelCostosVisitas = (datos, fechaInicio, fechaFin) => {
         // Medicamentos
         if (visita.medicamentos.length > 0) {
             wsData.push(['MEDICAMENTOS']);
-            wsData.push(['Medicamento', 'Cantidad', 'Costo Unitario', 'Subtotal']);
+            wsData.push(['Medicamento', 'Costo']);
             visita.medicamentos.forEach(med => {
                 wsData.push([
                     med.nombre_medicamento,
-                    med.cantidad,
-                    parseFloat(med.costo).toFixed(2),
-                    (med.costo * med.cantidad).toFixed(2)
+                    parseFloat(med.costo).toFixed(2)
                 ]);
             });
-            wsData.push(['Subtotal Medicamentos', '', '', visita.total_medicamentos.toFixed(2)]);
+            wsData.push(['Subtotal Medicamentos', visita.total_medicamentos.toFixed(2)]);
             wsData.push([]);
         }
         
-        wsData.push(['TOTAL VISITA', '', '', visita.total_visita.toFixed(2)]);
+        wsData.push(['DESGLOSE DE ESTA VISITA']);
+        wsData.push(['Consulta', visita.costo_consulta.toFixed(2)]);
+        wsData.push(['Exámenes', visita.total_examenes.toFixed(2)]);
+        wsData.push(['Medicamentos', visita.total_medicamentos.toFixed(2)]);
+        wsData.push(['TOTAL VISITA', visita.total_visita.toFixed(2)]);
         wsData.push([]);
         wsData.push([]);
     });
@@ -321,7 +329,6 @@ export const generarExcelCostosVisitas = (datos, fechaInicio, fechaFin) => {
     
     ws['!cols'] = [
         { wch: 50 },
-        { wch: 20 },
         { wch: 20 },
         { wch: 20 }
     ];

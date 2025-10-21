@@ -3,13 +3,14 @@ import {
     Box, Button, FormControl, InputLabel, Select, MenuItem, TextField,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     Paper, Typography, Grid, CircularProgress, Stack, Accordion,
-    AccordionSummary, AccordionDetails, Chip, divider
+    AccordionSummary, AccordionDetails, Chip
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TableViewIcon from '@mui/icons-material/TableView';
 import PrintIcon from '@mui/icons-material/Print';
 import SearchIcon from '@mui/icons-material/Search';
+import Divider from '@mui/material';
 import api from '../../utils/api';
 import { generarPDFCostosVisitas } from './utils/pdfGenerator';
 import { generarExcelCostosVisitas } from './utils/excelGenerator';
