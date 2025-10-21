@@ -61,7 +61,7 @@ const ReporteCostosVisitas = () => {
         }
     };
 
-    const handleExportarPDF = () => {
+    /*const handleExportarPDF = () => {
         if (!datosReporte) return;
         generarPDFCostosVisitas(datosReporte, fechaInicio, fechaFin);
     };
@@ -69,7 +69,7 @@ const ReporteCostosVisitas = () => {
     const handleExportarExcel = () => {
         if (!datosReporte) return;
         generarExcelCostosVisitas(datosReporte, fechaInicio, fechaFin);
-    };
+    };*/
 
     const handleImprimir = () => {
         window.print();
