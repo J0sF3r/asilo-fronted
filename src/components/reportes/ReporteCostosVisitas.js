@@ -192,27 +192,36 @@ const ReporteCostosVisitas = () => {
                         </Box>
 
                         {/* Resumen General */}
-                        <Box sx={{ mb: 3, p: 2, bgcolor: 'primary.light', color: 'white', borderRadius: 1 }}>
+                        <Box sx={{ mb: 3, p: 2, bgcolor: 'grey.100', borderRadius: 1, border: '1px solid #e0e0e0' }}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary' }}>
+                                Resumen General
+                            </Typography>
                             <Grid container spacing={2}>
-                                <Grid item xs={12} sm={3}>
-                                    <Typography variant="body2">Total Visitas:</Typography>
-                                    <Typography variant="h6">{datosReporte.cantidadVisitas}</Typography>
+                                <Grid item xs={12} sm={2.4}>
+                                    <Typography variant="body2" color="text.secondary">Total Visitas:</Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{datosReporte.cantidadVisitas}</Typography>
                                 </Grid>
-                                <Grid item xs={12} sm={2.25}>
-                                    <Typography variant="body2">Consultas:</Typography>
-                                    <Typography variant="h6">{formatCurrency(datosReporte.totalConsultas)}</Typography>
+                                <Grid item xs={12} sm={2.4}>
+                                    <Typography variant="body2" color="text.secondary">Consultas:</Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                        {formatCurrency(datosReporte.totalConsultas)}
+                                    </Typography>
                                 </Grid>
-                                <Grid item xs={12} sm={2.25}>
-                                    <Typography variant="body2">Exámenes:</Typography>
-                                    <Typography variant="h6">{formatCurrency(datosReporte.totalExamenes)}</Typography>
+                                <Grid item xs={12} sm={2.4}>
+                                    <Typography variant="body2" color="text.secondary">Exámenes:</Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                        {formatCurrency(datosReporte.totalExamenes)}
+                                    </Typography>
                                 </Grid>
-                                <Grid item xs={12} sm={2.25}>
-                                    <Typography variant="body2">Medicamentos:</Typography>
-                                    <Typography variant="h6">{formatCurrency(datosReporte.totalMedicamentos)}</Typography>
+                                <Grid item xs={12} sm={2.4}>
+                                    <Typography variant="body2" color="text.secondary">Medicamentos:</Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                        {formatCurrency(datosReporte.totalMedicamentos)}
+                                    </Typography>
                                 </Grid>
-                                <Grid item xs={12} sm={2.25}>
-                                    <Typography variant="body2">Total General:</Typography>
-                                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                <Grid item xs={12} sm={2.4}>
+                                    <Typography variant="body2" color="text.secondary">Total General:</Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'error.main' }}>
                                         {formatCurrency(datosReporte.totalGeneral)}
                                     </Typography>
                                 </Grid>
@@ -246,7 +255,7 @@ const ReporteCostosVisitas = () => {
                                         </Typography>
 
                                         {/* COSTO DE CONSULTA */}
-                                        <Box sx={{ mb: 2, p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
+                                        <Box sx={{ mb: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1, border: '1px solid #e0e0e0' }}>
                                             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
                                                 Consulta Médica:
                                             </Typography>
@@ -255,13 +264,12 @@ const ReporteCostosVisitas = () => {
                                                     <Typography variant="body2">{visita.desc_consulta}</Typography>
                                                 </Grid>
                                                 <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                                                         {formatCurrency(visita.costo_consulta)}
                                                     </Typography>
                                                 </Grid>
                                             </Grid>
                                         </Box>
-
                                         {/* Exámenes */}
                                         {visita.examenes.length > 0 && (
                                             <Box sx={{ mb: 2 }}>
