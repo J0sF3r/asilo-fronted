@@ -11,8 +11,7 @@ import TableViewIcon from '@mui/icons-material/TableView';
 import PrintIcon from '@mui/icons-material/Print';
 import SearchIcon from '@mui/icons-material/Search';
 import api from '../../utils/api';
-import { generarPDFCostosVisitas } from './utils/pdfGenerator';
-import { generarExcelCostosVisitas } from './utils/excelGenerator';
+
 
 const ReporteCostosVisitas = () => {
     const [pacientes, setPacientes] = useState([]);
