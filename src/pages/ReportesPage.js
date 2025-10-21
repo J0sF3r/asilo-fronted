@@ -5,13 +5,10 @@ import {
     TextField, FormControl, InputLabel, Select, MenuItem, IconButton, Divider
 } from '@mui/material';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import TableViewIcon from '@mui/icons-material/TableView';
-import PrintIcon from '@mui/icons-material/Print';
-import CloseIcon from '@mui/icons-material/Close';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CloseIcon from '@mui/icons-material/Close';
 
-// Importaremos los componentes de reportes individuales
+// Importar componentes de reportes
 import ReporteCobros from '../components/reportes/ReporteCobros';
 import ReportePagosFundacion from '../components/reportes/ReportePagosFundacion';
 import ReporteEntradas from '../components/reportes/ReporteEntradas';
@@ -66,7 +63,6 @@ const ReportesPage = () => {
             icono: <AttachMoneyIcon sx={{ fontSize: 60, color: 'secondary.main' }} />,
             component: ReporteCostosVisitas
         }
-
     ];
 
     const handleOpenReporte = (reporte) => {
@@ -108,7 +104,6 @@ const ReportesPage = () => {
                 ))}
             </Grid>
 
-            {/* Modal para generar reporte */}
             <Dialog 
                 open={modalOpen} 
                 onClose={handleCloseModal} 

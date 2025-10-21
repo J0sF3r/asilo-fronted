@@ -467,3 +467,142 @@ export const generarPDFMedicamentos = (datos, fechaInicio, fechaFin) => {
     
     doc.save(`Reporte_Medicamentos_${datos.paciente.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
 };
+
+export const generarPDFCostosVisitas = (datos, fechaInicio, fechaFin) => {
+    const doc = new jsPDF();
+    
+    if (LOGO_BASE64 && LOGO_BASE64.length > 100) {
+        try {
+            doc.addImage(LOGO_BASE64, 'PNG', 92, 8, 25, 25);
+        } catch (error) {
+            console.warn('No se pudo agregar el logo:', error);
+        }
+    }
+    
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text('Asilo de Ancianos Cabeza de Algodón', 105, 38, { align: 'center' });
+    
+    doc.setFontSize(13);
+    doc.text('Reporte de Costos por Visita Médica', 105, 45, { align: 'center' });
+    
+    doc.setLineWidth(0.5);
+    doc.line(14, 50, 196, 50);
+    
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Paciente: ${datos.paciente.nombre}`, 14, 57);
+    doc.text(`Período: ${formatearFecha(fechaInicio)} - ${formatearFecha(fechaFin)}`, 14, 63);
+    doc.text(`Fecha de emisión: ${formatearFecha(new Date().toISOString().split('T')[0])}`, 14, 69);
+    
+    // Resumen General
+    doc.setFillColor(66, 165, 245);
+    doc.rect(14, 74, 182, 20, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.text('Total Visitas:', 18, 82);
+    doc.text(String(datos.cantidadVisitas), 18, 88);
+    
+    doc.text('Total Exámenes:', 60, 82);
+    doc.text(`Q${datos.totalExamenes}`, 60, 88);
+    
+    doc.text('Total Medicamentos:', 105, 82);
+    doc.text(`Q${datos.totalMedicamentos}`, 105, 88);
+    
+    doc.setFont(undefined, 'bold');
+    doc.text('TOTAL GENERAL:', 150, 82);
+    doc.text(`Q${datos.totalGeneral}`, 150, 88);
+    
+    let yPosition = 100;
+    
+    // Detalle por visita
+    datos.visitas.forEach((visita, index) => {
+        if (yPosition > 250) {
+            doc.addPage();
+            yPosition = 20;
+        }
+        
+        doc.setTextColor(0, 0, 0);
+        doc.setFillColor(240, 240, 240);
+        doc.rect(14, yPosition, 182, 8, 'F');
+        
+        doc.setFont(undefined, 'bold');
+        doc.setFontSize(10);
+        doc.text(`Visita ${index + 1} - ${new Date(visita.fecha_visita).toLocaleDateString('es-GT')}`, 16, yPosition + 5);
+        doc.text(`Total: Q${visita.total_visita.toFixed(2)}`, 160, yPosition + 5);
+        
+        yPosition += 10;
+        
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(8);
+        doc.text(`Médico: ${visita.nombre_medico || 'N/A'}`, 16, yPosition);
+        yPosition += 5;
+        
+        // Exámenes
+        if (visita.examenes.length > 0) {
+            const examenesData = visita.examenes.map(ex => [
+                ex.nombre_examen,
+                ex.resultado || 'Pendiente',
+                `Q${parseFloat(ex.costo).toFixed(2)}`
+            ]);
+            
+            autoTable(doc, {
+                startY: yPosition,
+                head: [['Examen', 'Resultado', 'Costo']],
+                body: examenesData,
+                theme: 'grid',
+                headStyles: { fillColor: [76, 175, 80], fontSize: 8 },
+                styles: { fontSize: 7, cellPadding: 2 },
+                columnStyles: {
+                    0: { cellWidth: 80 },
+                    1: { cellWidth: 60 },
+                    2: { cellWidth: 30, halign: 'right' }
+                },
+                margin: { left: 16 }
+            });
+            
+            yPosition = doc.lastAutoTable.finalY + 2;
+            doc.text(`Subtotal Exámenes: Q${visita.total_examenes.toFixed(2)}`, 16, yPosition);
+            yPosition += 5;
+        }
+        
+        // Medicamentos
+        if (visita.medicamentos.length > 0) {
+            const medicamentosData = visita.medicamentos.map(med => [
+                med.nombre_medicamento,
+                String(med.cantidad),
+                `Q${parseFloat(med.costo).toFixed(2)}`,
+                `Q${(med.costo * med.cantidad).toFixed(2)}`
+            ]);
+            
+            autoTable(doc, {
+                startY: yPosition,
+                head: [['Medicamento', 'Cant.', 'Costo Unit.', 'Subtotal']],
+                body: medicamentosData,
+                theme: 'grid',
+                headStyles: { fillColor: [33, 150, 243], fontSize: 8 },
+                styles: { fontSize: 7, cellPadding: 2 },
+                columnStyles: {
+                    0: { cellWidth: 80 },
+                    1: { cellWidth: 20, halign: 'center' },
+                    2: { cellWidth: 30, halign: 'right' },
+                    3: { cellWidth: 30, halign: 'right' }
+                },
+                margin: { left: 16 }
+            });
+            
+            yPosition = doc.lastAutoTable.finalY + 2;
+            doc.text(`Subtotal Medicamentos: Q${visita.total_medicamentos.toFixed(2)}`, 16, yPosition);
+            yPosition += 5;
+        }
+        
+        yPosition += 5;
+    });
+    
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.text('Documento generado electrónicamente', 105, 285, { align: 'center' });
+    
+    doc.save(`Reporte_Costos_Visitas_${datos.paciente.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+};

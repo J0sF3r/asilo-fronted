@@ -258,3 +258,78 @@ export const generarExcelMedicamentos = (datos, fechaInicio, fechaFin) => {
     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     saveAs(data, `Reporte_Medicamentos_${datos.paciente.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
 };
+
+export const generarExcelCostosVisitas = (datos, fechaInicio, fechaFin) => {
+    const header = [
+        ['Asilo de Ancianos Cabeza de Algodón'],
+        ['Reporte de Costos por Visita Médica'],
+        [],
+        [`Paciente: ${datos.paciente.nombre}`],
+        [`Período: ${new Date(fechaInicio).toLocaleDateString('es-GT')} - ${new Date(fechaFin).toLocaleDateString('es-GT')}`],
+        [`Fecha de emisión: ${new Date().toLocaleDateString('es-GT')}`],
+        [],
+        ['RESUMEN GENERAL'],
+        ['Total Visitas', datos.cantidadVisitas],
+        ['Total Exámenes', parseFloat(datos.totalExamenes).toFixed(2)],
+        ['Total Medicamentos', parseFloat(datos.totalMedicamentos).toFixed(2)],
+        ['TOTAL GENERAL', parseFloat(datos.totalGeneral).toFixed(2)],
+        []
+    ];
+    
+    let wsData = [...header];
+    
+    // Detalle por visita
+    datos.visitas.forEach((visita, index) => {
+        wsData.push([`VISITA ${index + 1} - ${new Date(visita.fecha_visita).toLocaleDateString('es-GT')}`]);
+        wsData.push([`Médico: ${visita.nombre_medico || 'N/A'}`]);
+        wsData.push([`Diagnóstico: ${visita.diagnostico || 'Sin diagnóstico'}`]);
+        wsData.push([]);
+        
+        // Exámenes
+        if (visita.examenes.length > 0) {
+            wsData.push(['EXÁMENES']);
+            wsData.push(['Examen', 'Resultado', 'Costo']);
+            visita.examenes.forEach(ex => {
+                wsData.push([ex.nombre_examen, ex.resultado || 'Pendiente', parseFloat(ex.costo).toFixed(2)]);
+            });
+            wsData.push(['Subtotal Exámenes', '', visita.total_examenes.toFixed(2)]);
+            wsData.push([]);
+        }
+        
+        // Medicamentos
+        if (visita.medicamentos.length > 0) {
+            wsData.push(['MEDICAMENTOS']);
+            wsData.push(['Medicamento', 'Cantidad', 'Costo Unitario', 'Subtotal']);
+            visita.medicamentos.forEach(med => {
+                wsData.push([
+                    med.nombre_medicamento,
+                    med.cantidad,
+                    parseFloat(med.costo).toFixed(2),
+                    (med.costo * med.cantidad).toFixed(2)
+                ]);
+            });
+            wsData.push(['Subtotal Medicamentos', '', '', visita.total_medicamentos.toFixed(2)]);
+            wsData.push([]);
+        }
+        
+        wsData.push(['TOTAL VISITA', '', '', visita.total_visita.toFixed(2)]);
+        wsData.push([]);
+        wsData.push([]);
+    });
+    
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    
+    ws['!cols'] = [
+        { wch: 50 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 }
+    ];
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Costos por Visita');
+    
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(data, `Reporte_Costos_Visitas_${datos.paciente.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
+};
