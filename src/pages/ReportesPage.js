@@ -17,6 +17,7 @@ import ReportePagosFundacion from '../components/reportes/ReportePagosFundacion'
 import ReporteEntradas from '../components/reportes/ReporteEntradas';
 import ReporteExamenes from '../components/reportes/ReporteExamenes';
 import ReporteMedicamentos from '../components/reportes/ReporteMedicamentos';
+import ReporteCostosVisitas from '../components/reportes/ReporteCostosVisitas';
 
 const ReportesPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
