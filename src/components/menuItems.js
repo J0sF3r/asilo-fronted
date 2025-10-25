@@ -110,7 +110,7 @@ const allMenuItems = [
         text: 'Reportes',
         path: '/reportes',
         icon: <AssessmentIcon />,
-        allowedRoles: ['Administración', 'Fundación']  // ← Roles que pueden ver reportes
+        allowedRoles: ['Administración', 'Fundación']  
     },
 
 ];

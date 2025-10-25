@@ -100,7 +100,7 @@ const FarmaciaPage = () => {
                 cantidad_dispensada: cobroFijoFormData.cantidad_dispensada,
                 costo_total: cobroFijoFormData.costo_total
             };
-            await api.post('/cobros-medicamentos', dataToSend); // ← Cambio aquí
+            await api.post('/cobros-medicamentos', dataToSend); 
             handleCloseCobroFijo();
             fetchData();
             alert('Cobro de tratamiento fijo registrado exitosamente.');

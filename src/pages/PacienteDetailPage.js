@@ -29,7 +29,7 @@ const PacienteDetailPage = () => {
     const [condicionModal, setCondicionModal] = useState({ open: false, data: null });
     const [tratamientoModal, setTratamientoModal] = useState({ open: false, data: null, id_condicion: null });
     
-    // NUEVO: Estados para medicamentos
+    // Estados para medicamentos
     const [medicamentos, setMedicamentos] = useState([]);
     const [tratamientoFormData, setTratamientoFormData] = useState({
         id_medicamento: '',
@@ -52,7 +52,7 @@ const PacienteDetailPage = () => {
                 api.get(`/pacientes/${id}/familiares`),
                 api.get(`/pacientes/${id}/solicitudes`),
                 api.get(`/pacientes/${id}/condiciones`),
-                api.get('/medicamentos') // NUEVO: Cargar medicamentos
+                api.get('/medicamentos') 
             ]);
             setPaciente(pacienteRes.data);
             setFamiliares(familiaresRes.data);
@@ -110,7 +110,7 @@ const PacienteDetailPage = () => {
         }
     };
 
-    // --- Funciones para CRUD de Condiciones ---
+    // Funciones para CRUD de Condiciones ---
     const handleOpenCondicionModal = (data = null) => setCondicionModal({ open: true, data });
     const handleCloseCondicionModal = () => setCondicionModal({ open: false, data: null });
     const handleCondicionSubmit = async (event) => {
@@ -140,7 +140,7 @@ const PacienteDetailPage = () => {
         }
     };
 
-    // --- Funciones ACTUALIZADAS para CRUD de Tratamientos Fijos ---
+    //  Funciones ACTUALIZADAS para CRUD de Tratamientos Fijos ---
     const handleOpenTratamientoModal = (id_condicion, data = null) => {
         if (data) {
             // Editando tratamiento existente
@@ -332,8 +332,6 @@ const PacienteDetailPage = () => {
                     ))
                 ) : <Typography>No hay condiciones de base registradas.</Typography>}
             </Paper>
-
-            {/* ... resto del código de historial y familiares sin cambios ... */}
             <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold', mb: 2 }}>
                 Historial Clínico
             </Typography>
@@ -468,7 +466,7 @@ const PacienteDetailPage = () => {
                 </Paper>
             </Box>
 
-            {/* Modal de Familiar sin cambios */}
+            {/* Modal de Asignar Familiar */}                        
             <Dialog open={familiarModalOpen} onClose={handleCloseFamiliarModal} fullWidth maxWidth="xs">
                 <DialogTitle>Asignar un Familiar Existente</DialogTitle>
                 <DialogContent>
@@ -507,7 +505,7 @@ const PacienteDetailPage = () => {
                 </Box>
             </Dialog>
 
-            {/* Modal de Tratamiento ACTUALIZADO */}
+            {/* Modal de Tratamiento */}
             <Dialog open={tratamientoModal.open} onClose={handleCloseTratamientoModal} fullWidth maxWidth="sm">
                 <form onSubmit={handleTratamientoSubmit}>
                     <DialogTitle>{tratamientoModal.data ? 'Editar Tratamiento' : 'Añadir Nuevo Tratamiento'}</DialogTitle>

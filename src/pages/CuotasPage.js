@@ -51,7 +51,7 @@ const CuotasPage = () => {
         fetchData();
     }, []);
 
-    // ========== CONFIGURAR CUOTA ==========
+    // configurar cuota
     const handleOpenModal = (cuota = null) => {
         if (cuota) {
             setFormData({
@@ -91,7 +91,7 @@ const CuotasPage = () => {
         }
     };
 
-    // ========== DESACTIVAR CUOTA ==========
+    // desactivar cuota
     const handleDesactivar = async (id) => {
         if (!window.confirm('¿Desactivar esta configuración de cuota?')) return;
 
@@ -105,7 +105,7 @@ const CuotasPage = () => {
         }
     };
 
-    // ========== GENERAR CUOTAS DEL MES ==========
+    //Generar Cuotas del Mes
     const handleOpenGenerar = () => setModalGenerarOpen(true);
     const handleCloseGenerar = () => setModalGenerarOpen(false);
 

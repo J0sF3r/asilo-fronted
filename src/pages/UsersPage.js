@@ -68,19 +68,19 @@ const UsersPage = () => {
 
     const handleClickOpen = async (user = null) => {
         if (user && user.id_usuario) {
-            // --- MODO EDICIÓN ---
+            // Editar usuario existente
             try {
-                // 1. Buscamos los datos completos y actualizados del usuario
+                //Buscamos los datos completos y actualizados del usuario
                 const res = await api.get(`/users/${user.id_usuario}`);
                 const fullUserData = res.data;
 
-                // 2. Llenamos el formulario con los datos completos recibidos
+                //Llenamos el formulario con los datos completos recibidos
                 setEditingUser(fullUserData);
                 setNewUser({
                     username: fullUserData.username || '',
                     nombre_completo: fullUserData.nombre_completo || '',
                     email: fullUserData.email || '',
-                    password: '', // La contraseña siempre se deja en blanco por seguridad
+                    password: '', 
                     id_rol: fullUserData.id_rol,
                     id_medico: fullUserData.id_medico || null,
                     id_enfermero: fullUserData.id_enfermero || null,
@@ -95,7 +95,7 @@ const UsersPage = () => {
                 alert("No se pudieron cargar los datos para editar.");
             }
         } else {
-            // --- MODO CREACIÓN (se queda como antes) ---
+            // Crear nuevo usuario
             setEditingUser(null);
             setNewUser({
                 username: '',
@@ -152,7 +152,7 @@ const UsersPage = () => {
         if (window.confirm('¿Estás seguro de que quieres desactivar a este usuario?')) {
             try {
                 await api.delete(`/users/${userId}`);
-                fetchUsers(); // Refrescar la tabla
+                fetchUsers(); 
                 alert('Usuario desactivado.');
             } catch (err) {
                 console.error("Error al desactivar usuario:", err);
@@ -162,7 +162,7 @@ const UsersPage = () => {
     };
     const handleSubmit = async () => {
         try {
-            console.log("Datos a enviar:", newUser); // AGREGA ESTO
+            console.log("Datos a enviar:", newUser);
             if (editingUser) {
                 // Si estamos editando, usamos PUT
                 await api.put(`/users/${editingUser.id_usuario}`, newUser);
@@ -173,8 +173,7 @@ const UsersPage = () => {
             handleClose();
             fetchUsers();
             alert(`¡Usuario ${editingUser ? 'actualizado' : 'creado'} exitosamente!`);
-        } catch (err) { /* ... manejo de error ... */ 
-                console.error("Error completo:", err.response?.data); // Y ESTO
+        } catch (err) { 
                 alert('Error: ' + (err.response?.data?.msg || err.message));
         }
     };

@@ -15,7 +15,7 @@ const FamiliaresPage = () => {
     const [familiares, setFamiliares] = useState([]);
     const [open, setOpen] = useState(false);
 
-    // --- NUEVO: Estados para manejar la edición y el borrado ---
+    // Estados para manejar la edición y el borrado
     const [isEditing, setIsEditing] = useState(false);
     const [currentFamiliarId, setCurrentFamiliarId] = useState(null);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -55,7 +55,7 @@ const FamiliaresPage = () => {
         resetForm();
     };
 
-    // --- NUEVO: Función para abrir el modal en modo edición ---
+    // Función para abrir el modal en modo edición ---
     const handleOpenEdit = (familiar) => {
         setIsEditing(true);
         setCurrentFamiliarId(familiar.id_familiar);
@@ -72,7 +72,7 @@ const FamiliaresPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // --- MODIFICADO: handleSubmit ahora crea o actualiza ---
+    // crea o actualiza ---
     const handleSubmit = async () => {
         try {
             if (isEditing) {
@@ -90,7 +90,7 @@ const FamiliaresPage = () => {
         }
     };
 
-    // --- NUEVO: Funciones para manejar la eliminación ---
+    //  Funciones para manejar la eliminación ---
     const handleDeleteOpen = (familiar) => {
         setFamiliarToDelete(familiar);
         setDeleteConfirmOpen(true);
@@ -158,7 +158,7 @@ const FamiliaresPage = () => {
 
             {/* Modal para Registrar y Editar Familiar */}
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                {/* --- MODIFICADO: Título dinámico --- */}
+                {/* Título dinámico --- */}
                 <DialogTitle>{isEditing ? 'Editar Familiar' : 'Registrar Nuevo Familiar'}</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -182,7 +182,7 @@ const FamiliaresPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* --- NUEVO: Diálogo de Confirmación para Eliminar --- */}
+            {/* Diálogo de Confirmación para Eliminar --- */}
             <Dialog open={deleteConfirmOpen} onClose={handleDeleteClose}>
                 <DialogTitle>Confirmar Desactivación</DialogTitle>
                 <DialogContent>

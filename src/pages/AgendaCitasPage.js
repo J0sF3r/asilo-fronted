@@ -58,7 +58,7 @@ const AgendaCitasPage = () => {
                 if (role === 'Medico Especialista' || role === 'Medico General') {
                     apiUrl = `/visitas/mis-citas?estado=${filtro}`;
                 } else if (role === 'Fundación' || role === 'Administración') {
-                    apiUrl = `/visitas?estado=${filtro}`; // Asumiendo que la ruta general también puede filtrar
+                    apiUrl = `/visitas?estado=${filtro}`; 
                 }
 
                 if (apiUrl) {
@@ -412,7 +412,7 @@ const AgendaCitasPage = () => {
 };
 
 const HistorialPacienteModal = ({ open, onClose, historial, loading, nombrePaciente }) => {
-    // La variable 'historial' ahora contiene { visitas: [], condiciones: [] }
+    // La variable 'historial'  contiene { visitas: [], condiciones: [] }
     const visitas = historial?.visitas || [];
     const condiciones = historial?.condiciones || [];
 
@@ -453,7 +453,6 @@ const HistorialPacienteModal = ({ open, onClose, historial, loading, nombrePacie
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Fecha: {new Date(visita.fecha_visita).toLocaleDateString('es-GT')}</Typography>
                                     <Typography><strong>Diagnóstico:</strong> {visita.diagnostico || 'No especificado'}</Typography>
                                     <Typography variant="body2" color="text.secondary">Atendido por: Dr./Dra. {visita.nombre_medico || 'N/A'}</Typography>
-                                    {/* Aquí podrías añadir examenes y medicamentos de la visita si los necesitas */}
                                 </Paper>
                             )) : <Typography variant="body2" sx={{ fontStyle: 'italic' }}>No hay visitas anteriores.</Typography>}
                         </Grid>

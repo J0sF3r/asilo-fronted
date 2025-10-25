@@ -13,7 +13,7 @@ const MedicosPage = () => {
     const [medicos, setMedicos] = useState([]);
     const [open, setOpen] = useState(false);
 
-    // --- NUEVO: Estados para manejar la edición y el borrado ---
+    // Estados para manejar la edición y el borrado ---
     const [isEditing, setIsEditing] = useState(false);
     const [currentMedicoId, setCurrentMedicoId] = useState(null);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -57,7 +57,7 @@ const MedicosPage = () => {
         resetForm();
     };
 
-    // --- NUEVO: Función para abrir el modal en modo edición ---
+    // Función para abrir el modal en modo edición ---
     const handleOpenEdit = (medico) => {
         setIsEditing(true);
         setCurrentMedicoId(medico.id_medico);
@@ -81,7 +81,7 @@ const MedicosPage = () => {
         }));
     };
 
-    // --- MODIFICADO: handleSubmit ahora crea o actualiza ---
+    // crea o actualiza ---
     const handleSubmit = async () => {
         const dataToSend = {
             ...formData,
@@ -105,7 +105,7 @@ const MedicosPage = () => {
         }
     };
 
-    // --- NUEVO: Funciones para manejar la eliminación ---
+    // Funciones para manejar la eliminación ---
     const handleDeleteOpen = (medico) => {
         setMedicoToDelete(medico);
         setDeleteConfirmOpen(true);

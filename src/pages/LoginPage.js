@@ -2,8 +2,6 @@
 
 import React, { useState } from 'react';
 import api from '../utils/api';
-
-// Importaciones de Material-UI
 import { Avatar, Button, TextField, Box, Typography, Container, CssBaseline } from '@mui/material';
 import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined';
 import { useNavigate } from 'react-router-dom';
@@ -26,10 +24,10 @@ const LoginPage = () => {
             
             // Guardamos el token Y el rol del usuario en el localStorage
             localStorage.setItem('token', res.data.token);
-            localStorage.setItem('userRole', res.data.rol); // <-- LÍNEA CLAVE
+            localStorage.setItem('userRole', res.data.rol); 
             
             // Redirigimos a TODOS los usuarios a la página principal
-            navigate('/'); // <-- SIMPLIFICADO
+            navigate('/'); 
 
         } catch (err) {
             console.error(err);
@@ -39,7 +37,7 @@ const LoginPage = () => {
 
     return (
         <Container component="main" maxWidth="xs">
-            <CssBaseline /> {/* Normaliza los estilos del navegador */}
+            <CssBaseline /> 
             <Box
                 sx={{
                     marginTop: 8,

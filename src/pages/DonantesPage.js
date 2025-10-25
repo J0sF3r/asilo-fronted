@@ -50,7 +50,7 @@ const DonantesPage = () => {
         fetchData();
     }, []);
 
-    // ========== GESTIÓN DE DONANTES ==========
+    // GESTIÓN DE DONANTES 
     const handleOpenModal = (donante = null) => {
         if (donante) {
             setCurrentDonante(donante);
@@ -115,7 +115,7 @@ const DonantesPage = () => {
         }
     };
 
-    // ========== REGISTRAR DONACIÓN ==========
+    // REGISTRAR DONACIÓN 
     const handleOpenDonacion = (donante) => {
         setDonanteSeleccionado(donante);
         setDonacionData({ monto: '', descripcion: '' });

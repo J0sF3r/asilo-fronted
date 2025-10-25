@@ -21,7 +21,6 @@ const PendientesRevision = () => {
 
     const formatDate = (dateString) => new Date(dateString).toLocaleDateString('es-GT');
 
-    // Si no hay pendientes, no mostramos nada.
     if (pendientes.length === 0) {
         return null;
     }

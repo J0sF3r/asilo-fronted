@@ -1,33 +1,32 @@
 // src/theme.js
 import { createTheme } from '@mui/material/styles';
 
-// Define una paleta de colores que transmite calma y cuidado.
-// Verdes suaves, azules tranquilos y tonos tierra son excelentes opciones.
+// Define una paleta de colores
+// Verdes suaves, azules tranquilos y tonos tierra
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2E7D32', // Un verde oscuro, sereno y profesional
+      main: '#2E7D32', // Un verde oscuro
     },
     secondary: {
-      main: '#FFA726', // Un naranja cálido y amigable, como el de un atardecer
+      main: '#FFA726', // Un naranja cálido 
     },
     background: {
-      default: '#F5F5F5', // Un fondo ligeramente gris para no cansar la vista
+      default: '#F5F5F5', // Un fondo  gris 
     },
   },
   typography: {
     fontFamily: '"Nunito", "Roboto", "Helvetica", "Arial", sans-serif',
     h5: {
-      fontWeight: 600, // Hacemos los títulos un poco más audaces
+      fontWeight: 600, 
     },
   },
   components: {
-    // Personalizamos el estilo por defecto de algunos componentes
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8, // Botones con bordes más redondeados y amigables
-          textTransform: 'none', // Quitamos la transformación a mayúsculas
+          borderRadius: 8, // Botones con bordes más redondeados
+          textTransform: 'none', 
           fontWeight: 'bold',
         },
       },

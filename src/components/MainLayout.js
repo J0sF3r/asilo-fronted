@@ -1,15 +1,15 @@
 import React from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom'; // <-- 1. Importa RouterLink
-import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/material'; // <-- 2. Importa IconButton
+import { useNavigate, Link as RouterLink } from 'react-router-dom'; 
+import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/material'; 
 import LogoutIcon from '@mui/icons-material/Logout';
-import DashboardIcon from '@mui/icons-material/Dashboard'; // <-- 3. Importa el ícono del dashboard
+import DashboardIcon from '@mui/icons-material/Dashboard'; 
 
 const MainLayout = ({ children }) => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('userRole'); // Asegúrate de limpiar también el rol
+        localStorage.removeItem('userRole'); 
         navigate('/login');
     };
 
@@ -21,7 +21,6 @@ const MainLayout = ({ children }) => {
                         Asilo de Ancianos Cabeza de Algodón
                     </Typography>
                     
-                    {/* --- 4. AÑADE ESTE BOTÓN AQUÍ --- */}
                     <IconButton
                         color="inherit"
                         component={RouterLink}

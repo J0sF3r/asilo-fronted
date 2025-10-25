@@ -18,7 +18,7 @@ const PacientesPage = () => {
     const [open, setOpen] = useState(false);
     const [userRole, setUserRole] = useState(null);
 
-    // ✅ ESTADOS PARA BÚSQUEDA Y FILTROS (DECLARADOS CORRECTAMENTE)
+    //ESTADOS PARA BÚSQUEDA Y FILTROS
     const [searchTerm, setSearchTerm] = useState('');
     const [filtroSexo, setFiltroSexo] = useState('Todos');
 
@@ -120,7 +120,6 @@ const PacientesPage = () => {
         }
     };
 
-    // --- NUEVAS FUNCIONES PARA MANEJAR LA ELIMINACIÓN ---
     const handleDeleteOpen = (paciente) => {
         setPacienteToDelete(paciente);
         setDeleteConfirmOpen(true);
@@ -274,7 +273,6 @@ const PacientesPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* --- NUEVO: Diálogo de Confirmación para Eliminar --- */}
             <Dialog open={deleteConfirmOpen} onClose={handleDeleteClose}>
                 <DialogTitle>Confirmar Eliminación</DialogTitle>
                 <DialogContent>

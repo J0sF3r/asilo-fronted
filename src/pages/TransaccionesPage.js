@@ -59,7 +59,7 @@ const TransaccionesPage = () => {
         fetchData();
     }, []);
 
-    // ========== MODAL DE INGRESO/GASTO ==========
+    // Modal ingreso/gasto
     const handleOpenModal = (gasto = false) => {
         setIsGasto(gasto);
         setFormData({ tipo: gasto ? 'Pago de Servicios' : 'Ingreso por Donación', descripcion: '', monto: '' });
@@ -92,7 +92,7 @@ const TransaccionesPage = () => {
         }
     };
 
-    // ========== MODAL DE DESCUENTO ==========
+    //Modal descuento
     const handleOpenDescuento = (movimiento) => {
         setMovimientoSeleccionado(movimiento);
         setDescuentoData({ descuento_aplicado: movimiento.descuento_aplicado || 0 });
@@ -129,7 +129,7 @@ const TransaccionesPage = () => {
         }
     };
 
-    // ========== MARCAR COMO PAGADO ==========
+    //Marcar como pagado
     const handleMarcarPagado = async (id) => {
         if (!window.confirm('¿Marcar este movimiento como Pagado?')) return;
 
@@ -143,7 +143,7 @@ const TransaccionesPage = () => {
         }
     };
 
-    // ========== UTILIDADES ==========
+    //utilidades
     const formatCurrency = (amount) => `Q${parseFloat(amount).toFixed(2)}`;
 
     const transaccionesFiltradas = data?.transacciones?.filter(t => {

@@ -13,7 +13,7 @@ const EnfermerosPage = () => {
     const [enfermeros, setEnfermeros] = useState([]);
     const [open, setOpen] = useState(false);
 
-    // --- NUEVO: Estados para manejar la edición y el borrado ---
+    // Estados para manejar la edición y el borrado ---
     const [isEditing, setIsEditing] = useState(false);
     const [currentEnfermeroId, setCurrentEnfermeroId] = useState(null);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -52,7 +52,7 @@ const EnfermerosPage = () => {
         resetForm();
     };
 
-    // --- NUEVO: Función para abrir el modal en modo edición ---
+    // Función para abrir el modal en modo edición ---
     const handleOpenEdit = (enfermero) => {
         setIsEditing(true);
         setCurrentEnfermeroId(enfermero.id_enfermero);
@@ -68,7 +68,7 @@ const EnfermerosPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // --- MODIFICADO: handleSubmit ahora crea o actualiza ---
+    //  crea o actualiza ---
     const handleSubmit = async () => {
         try {
             if (isEditing) {
@@ -86,7 +86,7 @@ const EnfermerosPage = () => {
         }
     };
 
-    // --- NUEVO: Funciones para manejar la eliminación ---
+    //Funciones para manejar la eliminación ---
     const handleDeleteOpen = (enfermero) => {
         setEnfermeroToDelete(enfermero);
         setDeleteConfirmOpen(true);
@@ -138,7 +138,6 @@ const EnfermerosPage = () => {
                                 <TableCell>{enfermero.telefono}</TableCell>
                                 <TableCell>{enfermero.email}</TableCell>
                                 <TableCell align="right">
-                                    {/* --- MODIFICADO: Se añaden los onClick a los botones --- */}
                                     <IconButton color="primary" onClick={() => handleOpenEdit(enfermero)}><EditIcon /></IconButton>
                                     <IconButton color="error" onClick={() => handleDeleteOpen(enfermero)}><DeleteOutlineIcon /></IconButton>
                                 </TableCell>
@@ -150,7 +149,7 @@ const EnfermerosPage = () => {
 
             {/* Modal para Registrar y Editar */}
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                {/* --- MODIFICADO: Título dinámico --- */}
+                {/* Título dinámico --- */}
                 <DialogTitle>{isEditing ? 'Editar Personal de Enfermería' : 'Registrar Nuevo Personal de Enfermería'}</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -171,7 +170,7 @@ const EnfermerosPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* --- NUEVO: Diálogo de Confirmación para Desactivar --- */}
+            {/* Diálogo de Confirmación para Desactivar --- */}
             <Dialog open={deleteConfirmOpen} onClose={handleDeleteClose}>
                 <DialogTitle>Confirmar Desactivación</DialogTitle>
                 <DialogContent>

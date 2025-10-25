@@ -12,8 +12,7 @@ const api = axios.create({
     }
 });*/
 
-// ESTA PARTE ES LA MÁS IMPORTANTE
-// Se ejecuta ANTES de cada solicitud para añadir el token.
+// Se ejecuta antes de cada solicitud para añadir el token.
 api.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
     if (token) {

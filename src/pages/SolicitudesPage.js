@@ -21,7 +21,7 @@ const SolicitudesPage = () => {
     const [enfermeros, setEnfermeros] = useState([]);
     const [formData, setFormData] = useState({});
     
-    // ✅ NUEVOS ESTADOS PARA BÚSQUEDA Y FILTROS
+    // ESTADOS PARA BÚSQUEDA Y FILTROS
     const [searchTerm, setSearchTerm] = useState('');
     const [filtroEstado, setFiltroEstado] = useState('Todos');
 
@@ -68,7 +68,7 @@ const SolicitudesPage = () => {
         fetchInitialData();
     }, []);
 
-    // ✅ FILTRAR SOLICITUDES
+    //FILTRAR SOLICITUDES
     const solicitudesFiltradas = solicitudes.filter(sol => {
         const matchNombre = sol.nombre_paciente 
             ? sol.nombre_paciente.toLowerCase().includes(searchTerm.toLowerCase())
@@ -207,12 +207,10 @@ const SolicitudesPage = () => {
         }
 
         if (userRole === 'Medico General' && currentSolicitud.estado === 'pendiente') {
-            // ✅ MEJORA: Mostrar contexto del paciente
             const pacienteInfo = pacientes.find(p => p.id_paciente === currentSolicitud.id_paciente);
             
             return (
                 <Box>
-                    {/* ✅ CONTEXTO DEL PACIENTE */}
                     <Box sx={{ bgcolor: 'grey.100', p: 2, borderRadius: 1, mb: 3 }}>
                         <Typography variant="body2"><strong>Paciente:</strong> {currentSolicitud.nombre_paciente}</Typography>
                         {pacienteInfo && (
@@ -248,7 +246,6 @@ const SolicitudesPage = () => {
         if ((userRole === 'Fundación' || userRole === 'Administración') && currentSolicitud.estado === 'aprobada') {
             return (
                 <Box>
-                    {/* ✅ CONTEXTO DEL PACIENTE Y SOLICITUD */}
                     <Box sx={{ bgcolor: 'grey.100', p: 2, borderRadius: 1, mb: 3 }}>
                         <Typography variant="body2"><strong>Paciente:</strong> {currentSolicitud.nombre_paciente}</Typography>
                         <Typography variant="body2"><strong>Motivo:</strong> {currentSolicitud.motivo}</Typography>
@@ -309,7 +306,6 @@ const SolicitudesPage = () => {
                 )}
             </Box>
 
-            {/* ✅ FILTROS DE BÚSQUEDA */}
             <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
                 <TextField
                     placeholder="Buscar por paciente..."
@@ -340,12 +336,10 @@ const SolicitudesPage = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            {/* ✅ COLUMNA FECHA AGREGADA */}
                             <TableCell sx={{ fontWeight: 'bold' }}>Fecha</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Paciente</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Médico General</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Motivo</TableCell>
-                            {/* ✅ COLUMNA ENFERMERO AGREGADA */}
                             <TableCell sx={{ fontWeight: 'bold' }}>Enfermero</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Estado</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }} align="right">Acciones</TableCell>
@@ -354,12 +348,10 @@ const SolicitudesPage = () => {
                     <TableBody>
                         {solicitudesFiltradas.map((sol) => (
                             <TableRow key={sol.id_solicitud}>
-                                {/* ✅ FECHA */}
                                 <TableCell>{formatDate(sol.fecha_solicitud)}</TableCell>
                                 <TableCell>{sol.nombre_paciente}</TableCell>
                                 <TableCell>{sol.nombre_medico_general}</TableCell>
                                 <TableCell>{sol.motivo}</TableCell>
-                                {/* ✅ ENFERMERO */}
                                 <TableCell>{sol.nombre_enfermero || '-'}</TableCell>
                                 <TableCell>{getStatusChip(sol.estado)}</TableCell>
                                 <TableCell align="right">

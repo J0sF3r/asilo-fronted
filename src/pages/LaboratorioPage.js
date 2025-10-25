@@ -18,7 +18,6 @@ const LaboratorioPage = () => {
 
     const fetchPendientes = async () => {
         try {
-            // Asumiendo que esta ruta te devuelve los pendientes de 'examen_visita'
             const res = await api.get('/laboratorio/pendientes');
             setPendientes(res.data);
         } catch (err) {
@@ -47,12 +46,11 @@ const LaboratorioPage = () => {
         setResultadoData({ ...resultadoData, [e.target.name]: e.target.value });
     };
 
-    // --- ESTA ES LA FUNCIÓN CORREGIDA ---
     const handleSubmit = async () => {
         if (!resultadoData.resultado) {
             return alert('Por favor, complete el campo de resultado.');
         }
-        if (!currentExamen) return; // Chequeo de seguridad
+        if (!currentExamen) return; 
 
         try {
             // CONSTRUIMOS LA URL CORRECTA con los dos IDs

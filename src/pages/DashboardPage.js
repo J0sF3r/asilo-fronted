@@ -16,7 +16,7 @@ const DashboardPage = () => {
         }
     }, []);
 
-    // --- LÓGICA DE FILTRADO CORREGIDA ---
+    // --- LÓGICA DE FILTRADO DE MENÚ ---
     const dashboardItems = userRole
         ? allMenuItems.filter(item => {
             // La única regla que necesitamos es si el rol está permitido.
